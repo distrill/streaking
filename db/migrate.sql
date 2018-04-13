@@ -16,17 +16,18 @@
   | name        (varchar) |
   | description (text)    |
   +-----------------------+
-  +-----------------------------+
-  | streaks                     |
-  +-----------------------------+
-  | id                (int)     |
-  | accumulator_key   (varchar) | *
-  | accumulator_value (text)    | *
-  | date_start        (date)    |
-  | date_end          (date)    |
-  | user_id           (int)     |
-  | goal_id           (int)     |
-  +-----------------------------+
+  +--------------------------------+
+  | streaks                        |
+  +--------------------------------+
+  | id                (int)        |
+  | accumulator_key   (varchar)    | *
+  | accumulator_value (text)       | *
+  | accumulator_description (text) | *
+  | date_start        (date)       |
+  | date_end          (date)       |
+  | user_id           (int)        |
+  | goal_id           (int)        |
+  +--------------------------------+
   * think money saved not buying cigarettes  
 */
 
@@ -67,6 +68,7 @@ CREATE TABLE streaks (
   id BIGINT NOT NULL AUTO_INCREMENT,
   accumulator_key VARCHAR(255),
   accumulator_value text,
+  accumulator_description text,
   date_start DATE,
   date_end DATE,
   user_id BIGINT,
