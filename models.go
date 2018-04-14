@@ -1,16 +1,70 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/jmoiron/sqlx"
 )
 
+type model interface {
+	create(interface{}) error
+	read(interface{}) (error, interface{})
+	update(interface{}) error
+	delete(int) error
+}
+
+type userModel struct{ db *sqlx.DB }
+type goalModel struct{ db *sqlx.DB }
+type streakModel struct{ db *sqlx.DB }
+
+func applySearch(qs string, search map[string]interface{}) string {
+	if search == nil {
+		return qs
+	}
+
+	delim := "WHERE"
+	for k, v := range search {
+		if _, ok := v.(string); ok {
+			v = fmt.Sprintf("'%v'", v)
+		}
+		// NOTE: this is bad and not escaped. Should use prepared statements.
+		// This means getting something like Object.values(search) and destructuring below
+		qs = fmt.Sprintf("%v %v %v = %v", qs, delim, k, v)
+		delim = "AND"
+	}
+	return qs
+}
+
 /*
- * [C]rud - Create
+ * Read
  */
-func createUser(db *sqlx.DB, u user) {
-	_, err := db.NamedExec(`
+func (um userModel) read(search map[string]interface{}) []user {
+	userResults := []user{}
+	qs := applySearch("SELECT * FROM users", search)
+	um.db.Select(&userResults, qs)
+	return userResults
+}
+
+func (gm goalModel) read(search map[string]interface{}) []goal {
+	goalResults := []goal{}
+	qs := applySearch("SELECT * FROM goals", search)
+	gm.db.Select(&goalResults, qs)
+	return goalResults
+}
+
+func (sm streakModel) read(search map[string]interface{}) []streak {
+	streakResults := []streak{}
+	qs := applySearch("SELECT * FROM streaks", search)
+	sm.db.Select(&streakResults, qs)
+	return streakResults
+}
+
+/*
+ * Create
+ */
+func (um userModel) create(u user) {
+	_, err := um.db.NamedExec(`
 		INSERT INTO users (name, email)
 		VALUES (:name, :email)
 	`, &u)
@@ -19,8 +73,8 @@ func createUser(db *sqlx.DB, u user) {
 	}
 }
 
-func createGoal(db *sqlx.DB, g goal) {
-	_, err := db.NamedExec(`
+func (gm goalModel) create(g goal) {
+	_, err := gm.db.NamedExec(`
 		INSERT INTO goals (name, description)
 		VALUES (:name, :description)
 	`, &g)
@@ -29,8 +83,8 @@ func createGoal(db *sqlx.DB, g goal) {
 	}
 }
 
-func createStreak(db *sqlx.DB, s streak) {
-	_, err := db.NamedExec(`
+func (sm streakModel) create(s streak) {
+	_, err := sm.db.NamedExec(`
 		INSERT INTO streaks (
 			accumulator_key,
 			accumulator_value,
@@ -55,32 +109,11 @@ func createStreak(db *sqlx.DB, s streak) {
 }
 
 /*
- * c[R]ud - Read
+ * Update
  */
-func readUsers(db *sqlx.DB) []user {
-	users := []user{}
-	db.Select(&users, "SELECT * FROM users")
-	return users
-}
-
-func readGoals(db *sqlx.DB) []goal {
-	goals := []goal{}
-	db.Select(&goals, "SELECT * FROM goals")
-	return goals
-}
-
-func readStreaks(db *sqlx.DB) []streak {
-	streaks := []streak{}
-	db.Select(&streaks, "SELECT * FROM streaks")
-	return streaks
-}
-
-/*
- * cr[U]d - Update
- */
-func updateUser(db *sqlx.DB, id int, u user) {
+func (um userModel) update(id int, u user) {
 	u.ID = id
-	_, err := db.NamedExec(`
+	_, err := um.db.NamedExec(`
 		UPDATE users
 		SET name = :name, email = :email
 		WHERE id = :id
@@ -90,9 +123,9 @@ func updateUser(db *sqlx.DB, id int, u user) {
 	}
 }
 
-func updateGoal(db *sqlx.DB, id int, g goal) {
+func (gm goalModel) update(id int, g goal) {
 	g.ID = id
-	_, err := db.NamedExec(`
+	_, err := gm.db.NamedExec(`
 		UPDATE goals
 		SET name = :name, description = :description
 		WHERE id = :id
@@ -102,9 +135,9 @@ func updateGoal(db *sqlx.DB, id int, g goal) {
 	}
 }
 
-func updateStreak(db *sqlx.DB, id int, s streak) {
+func (sm streakModel) update(id int, s streak) {
 	s.ID = id
-	_, err := db.NamedExec(`
+	_, err := sm.db.NamedExec(`
 		UPDATE streaks
 		SET
 			accumulator_key = :accumulator_key,
@@ -122,20 +155,20 @@ func updateStreak(db *sqlx.DB, id int, s streak) {
 }
 
 /*
- * cru[D] - Delete
+ * Delete
  */
 func delete(db *sqlx.DB, id int, table string) {
 	db.MustExec("DELETE FROM "+table+" WHERE id = ?", id)
 }
 
-func deleteUser(db *sqlx.DB, id int) {
-	delete(db, id, "users")
+func (um userModel) delete(id int) {
+	delete(um.db, id, "users")
 }
 
-func deleteGoal(db *sqlx.DB, id int) {
-	delete(db, id, "goals")
+func (gm goalModel) delete(id int) {
+	delete(gm.db, id, "goals")
 }
 
-func deleteStreak(db *sqlx.DB, id int) {
-	delete(db, id, "streaks")
+func (sm streakModel) delete(id int) {
+	delete(sm.db, id, "streaks")
 }

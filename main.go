@@ -43,32 +43,36 @@ func main() {
 		log.Panic(err)
 	}
 
-	// create
-	createUser(db, user{0, "brent 4", "brent 4 email"})
-	createGoal(db, goal{0, "goal 4", "this is the 4th goal"})
-	createStreak(db, streak{0, "key 4", "value 4", "description 4", "2018-04-01", "2018-04-13", 1, 1})
+	um := userModel{db}
+	gm := goalModel{db}
+	sm := streakModel{db}
 
 	// read
-	fmt.Println(readUsers(db))
-	fmt.Println(readGoals(db))
-	fmt.Println(readStreaks(db))
+	fmt.Println(um.read(nil))
+	fmt.Println(gm.read(nil))
+	fmt.Println(sm.read(nil))
+
+	// create
+	um.create(user{0, "brent 4", "brent 4 email"})
+	gm.create(goal{0, "goal 4", "this is the 4th goal"})
+	sm.create(streak{0, "key 4", "value 4", "description 4", "2018-04-01", "2018-04-13", 2, 2})
 
 	// update
-	updateUser(db, 1, user{1, "another updated name", "another updated email"})
-	fmt.Println(readUsers(db))
-	updateGoal(db, 1, goal{1, "updated goal name", "updated goal description"})
-	fmt.Println(readGoals(db))
-	updateStreak(db, 1, streak{1, "updated key", "updated value", "updated accumulator", "2018-01-01", "2018-01-02", 1, 1})
-	fmt.Println(readStreaks(db))
+	um.update(1, user{1, "another updated name", "another updated email"})
+	fmt.Println(um.read(nil))
+	gm.update(1, goal{1, "updated goal name", "updated goal description"})
+	fmt.Println(gm.read(nil))
+	sm.update(1, streak{1, "updated key", "updated value", "updated accumulator", "2018-01-01", "2018-01-02", 1, 1})
+	fmt.Println(sm.read(nil))
 
 	// delete
-	fmt.Println(readUsers(db))
-	deleteUser(db, 1)
-	fmt.Println(readUsers(db))
-	fmt.Println(readGoals(db))
-	deleteGoal(db, 1)
-	fmt.Println(readGoals(db))
-	fmt.Println(readStreaks(db))
-	deleteStreak(db, 2)
-	fmt.Println(readStreaks(db))
+	fmt.Println(sm.read(nil))
+	sm.delete(1)
+	fmt.Println(sm.read(nil))
+	fmt.Println(um.read(nil))
+	um.delete(1)
+	fmt.Println(um.read(nil))
+	fmt.Println(gm.read(nil))
+	gm.delete(1)
+	fmt.Println(gm.read(nil))
 }
