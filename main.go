@@ -35,30 +35,40 @@ type goal struct {
 }
 
 /*
- * models, read
+ * main as bru
  */
-func readUsers(db *sqlx.DB) []user {
-	users := []user{}
-	db.Select(&users, "SELECT * FROM users")
-	return users
-}
-
-func readGoals(db *sqlx.DB) []goal {
-	goals := []goal{}
-	db.Select(&goals, "SELECT * FROM goals")
-	return goals
-}
-
-func readStreaks(db *sqlx.DB) []streak {
-	streaks := []streak{}
-	db.Select(&streaks, "SELECT * FROM streaks")
-	return streaks
-}
-
 func main() {
 	db, err := sqlx.Connect("mysql", "streaking:streaking@/streaking")
 	if err != nil {
 		log.Panic(err)
 	}
+
+	// create
+	createUser(db, user{0, "brent 4", "brent 4 email"})
+	createGoal(db, goal{0, "goal 4", "this is the 4th goal"})
+	createStreak(db, streak{0, "key 4", "value 4", "description 4", "2018-04-01", "2018-04-13", 1, 1})
+
+	// read
+	fmt.Println(readUsers(db))
+	fmt.Println(readGoals(db))
+	fmt.Println(readStreaks(db))
+
+	// update
+	updateUser(db, 1, user{1, "another updated name", "another updated email"})
+	fmt.Println(readUsers(db))
+	updateGoal(db, 1, goal{1, "updated goal name", "updated goal description"})
+	fmt.Println(readGoals(db))
+	updateStreak(db, 1, streak{1, "updated key", "updated value", "updated accumulator", "2018-01-01", "2018-01-02", 1, 1})
+	fmt.Println(readStreaks(db))
+
+	// delete
+	fmt.Println(readUsers(db))
+	deleteUser(db, 1)
+	fmt.Println(readUsers(db))
+	fmt.Println(readGoals(db))
+	deleteGoal(db, 1)
+	fmt.Println(readGoals(db))
+	fmt.Println(readStreaks(db))
+	deleteStreak(db, 2)
 	fmt.Println(readStreaks(db))
 }
