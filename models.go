@@ -37,21 +37,55 @@ func applySearch(qs string, search map[string]interface{}) string {
 func (um userModel) read(search map[string]interface{}) []user {
 	userResults := []user{}
 	qs := applySearch("SELECT * FROM users", search)
-	um.db.Select(&userResults, qs)
+
+	if err := um.db.Select(&userResults, qs); err != nil {
+		log.Fatal(err)
+	}
+
 	return userResults
 }
 
 func (gm goalModel) read(search map[string]interface{}) []goal {
 	goalResults := []goal{}
-	qs := applySearch("SELECT * FROM goals", search)
-	gm.db.Select(&goalResults, qs)
+	qs := applySearch(`
+		SELECT
+			goals.id,
+			name,
+			description,
+			user_id
+		FROM
+			goals INNER JOIN
+			users_goals ON goals.id = users_goals.goal_id
+	`, search)
+
+	if err := gm.db.Select(&goalResults, qs); err != nil {
+		log.Fatal(err)
+	}
+
 	return goalResults
 }
 
 func (sm streakModel) read(search map[string]interface{}) []streak {
 	streakResults := []streak{}
-	qs := applySearch("SELECT * FROM streaks", search)
-	sm.db.Select(&streakResults, qs)
+	qs := applySearch(`
+		SELECT
+			streaks.id,
+			accumulator_key,
+			accumulator_value,
+			accumulator_description,
+			date_start,
+			date_end,
+			user_id,
+			goal_id
+		FROM
+			streaks INNER JOIN
+			users_goals ON users_goals.id = streaks.user_goal_id
+	`, search)
+
+	if err := sm.db.Select(&streakResults, qs); err != nil {
+		log.Fatal(err)
+	}
+
 	return streakResults
 }
 
