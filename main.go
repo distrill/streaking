@@ -31,6 +31,15 @@ func main() {
 	e.GET("/users/:user_id/goals", h.getGoals)
 	e.GET("/users/:user_id/streaks", h.getStreaks)
 
+	e.POST("/users/:user_id/goals", h.createGoal)
+	e.POST("/users/:user_id/streaks", h.createStreak)
+
+	e.PUT("/users/:user_id/goals", h.createGoal)
+	e.PUT("/users/:user_id/streaks", h.createStreak)
+
+	e.DELETE("/users/:user_id/goals", h.deleteGoal)
+	e.DELETE("/users/:user_id/streaks", h.deleteStreak)
+
 	// listen and serve
 	e.Logger.Fatal(e.Start(":8080"))
 }
