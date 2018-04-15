@@ -34,9 +34,6 @@ type goal struct {
 	Description string `db:"description" json:"description"`
 }
 
-/*
- * main as bru
- */
 func main() {
 	db, err := sqlx.Connect("mysql", "streaking:streaking@/streaking")
 	if err != nil {

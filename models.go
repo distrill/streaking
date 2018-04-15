@@ -7,16 +7,11 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type model interface {
-	create(interface{}) error
-	read(interface{}) (error, interface{})
-	update(interface{}) error
-	delete(int) error
-}
+type model struct{ db *sqlx.DB }
 
-type userModel struct{ db *sqlx.DB }
-type goalModel struct{ db *sqlx.DB }
-type streakModel struct{ db *sqlx.DB }
+type userModel model
+type goalModel model
+type streakModel model
 
 func applySearch(qs string, search map[string]interface{}) string {
 	if search == nil {
