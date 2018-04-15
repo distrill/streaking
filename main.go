@@ -27,6 +27,7 @@ func main() {
 
 	// routes
 	e.GET("/users", h.getUsers)
+	e.GET("/users/:user_id", h.getUser)
 	e.GET("/users/:user_id/goals", h.getGoals)
 	e.GET("/users/:user_id/streaks", h.getStreaks)
 
