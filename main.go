@@ -16,9 +16,8 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	h := handler{db}
 
-	// echo instance
+	h := handler{db}
 	e := echo.New()
 
 	// middleware

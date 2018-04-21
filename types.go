@@ -26,3 +26,9 @@ type goal struct {
 	Description string `db:"description" json:"description"`
 	UserID      int    `db:"user_id" json:"user_id"`
 }
+
+type userGoal struct {
+	ID     int `db:"id" json:"id"`
+	UserID int `db:"user_id" json:"user_id"`
+	GoalID int `db:"goal_id" json:"goal_id"`
+}

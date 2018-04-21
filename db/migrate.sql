@@ -32,7 +32,8 @@
   | accumulator_description (text) | *
   | date_start        (date)       |
   | date_end          (date)       |
-  | user_goal_id      (int)        |
+  | user_id           (int)        |
+  | goal_id           (int)        |
   +--------------------------------+
   * think money saved not buying cigarettes  
 */
@@ -52,7 +53,9 @@ CREATE TABLE users (
   name VARCHAR(255),
   email VARCHAR(255),
 
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+
+  UNIQUE KEY (email)
 );
 
 
@@ -61,9 +64,10 @@ CREATE TABLE goals (
   name VARCHAR(255),
   description text,
 
-  PRIMARY KEY (id)
-);
+  PRIMARY KEY (id),
 
+  UNIQUE KEY (name, description(150))
+);
 
 CREATE TABLE users_goals (
   id BIGINT NOT NULL AUTO_INCREMENT,
@@ -71,6 +75,8 @@ CREATE TABLE users_goals (
   goal_id BIGINT,
 
   PRIMARY KEY (id),
+
+  UNIQUE KEY (user_id, goal_id),
 
   FOREIGN KEY (user_id)
   REFERENCES users(id),
@@ -86,10 +92,15 @@ CREATE TABLE streaks (
   accumulator_description text,
   date_start DATE,
   date_end DATE,
-  user_goal_id BIGINT,
+  user_id BIGINT,
+  goal_id BIGINT,
   
   PRIMARY KEY (id),
 
-  FOREIGN KEY (user_goal_id)
-  REFERENCES users_goals(id)
-)
+  UNIQUE KEY (user_id, goal_id, date_start),
+
+  FOREIGN KEY (user_id)
+  REFERENCES users_goals(id),
+  FOREIGN KEY (goal_id)
+  REFERENCES goals(id)
+);

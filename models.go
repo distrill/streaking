@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -12,6 +11,7 @@ type model struct{ db *sqlx.DB }
 type userModel model
 type goalModel model
 type streakModel model
+type userGoalModel model
 
 func applySearch(qs string, search map[string]interface{}) string {
 	if search == nil {
@@ -34,38 +34,39 @@ func applySearch(qs string, search map[string]interface{}) string {
 /*
  * Read
  */
-func (um userModel) read(search map[string]interface{}) []user {
+func (um userModel) read(search map[string]interface{}) ([]user, error) {
 	userResults := []user{}
 	qs := applySearch("SELECT * FROM users", search)
 
 	if err := um.db.Select(&userResults, qs); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return userResults
+	return userResults, nil
 }
 
-func (gm goalModel) read(search map[string]interface{}) []goal {
+func (gm goalModel) read(search map[string]interface{}) ([]goal, error) {
 	goalResults := []goal{}
-	qs := applySearch(`
-		SELECT
-			goals.id,
-			name,
-			description,
-			user_id
-		FROM
-			goals INNER JOIN
-			users_goals ON goals.id = users_goals.goal_id
-	`, search)
+
+	selectString := "SELECT goals.id, name, description"
+	fromString := " FROM goals"
+
+	if search["user_id"] != nil {
+		selectString += ", user_id"
+		fromString += " INNER JOIN users_goals ON goals.id = users_goals.goal_id"
+	}
+
+	qs := applySearch(selectString+fromString, search)
+	fmt.Println(qs)
 
 	if err := gm.db.Select(&goalResults, qs); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return goalResults
+	return goalResults, nil
 }
 
-func (sm streakModel) read(search map[string]interface{}) []streak {
+func (sm streakModel) read(search map[string]interface{}) ([]streak, error) {
 	streakResults := []streak{}
 	qs := applySearch(`
 		SELECT
@@ -78,41 +79,53 @@ func (sm streakModel) read(search map[string]interface{}) []streak {
 			user_id,
 			goal_id
 		FROM
-			streaks INNER JOIN
-			users_goals ON users_goals.id = streaks.user_goal_id
+			streaks
 	`, search)
 
 	if err := sm.db.Select(&streakResults, qs); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return streakResults
+	return streakResults, nil
 }
 
 /*
  * Create
  */
-func (um userModel) create(u user) {
+func (um userModel) create(u user) error {
 	_, err := um.db.NamedExec(`
 		INSERT INTO users (name, email)
 		VALUES (:name, :email)
 	`, &u)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }
 
-func (gm goalModel) create(g goal) {
+func (gm goalModel) create(g goal) error {
 	_, err := gm.db.NamedExec(`
 		INSERT INTO goals (name, description)
 		VALUES (:name, :description)
 	`, &g)
-	if err != nil {
-		log.Fatal(err)
+	if !isErrDuplicateEntry(err) {
+		return err
 	}
+	return nil
 }
 
-func (sm streakModel) create(s streak) {
+func (ugm userGoalModel) create(ug userGoal) error {
+	_, err := ugm.db.NamedExec(`
+		INSERT INTO users_goals (user_id, goal_id)
+		VALUES (:user_id, :goal_id)
+	`, &ug)
+	if !isErrDuplicateEntry(err) {
+		return err
+	}
+	return nil
+}
+
+func (sm streakModel) create(s streak) error {
 	_, err := sm.db.NamedExec(`
 		INSERT INTO streaks (
 			accumulator_key,
@@ -132,15 +145,16 @@ func (sm streakModel) create(s streak) {
 			:goal_id
 		)
 	`, &s)
-	if err != nil {
-		log.Fatal(err)
+	if !isErrDuplicateEntry(err) {
+		return err
 	}
+	return nil
 }
 
 /*
  * Update
  */
-func (um userModel) update(id int, u user) {
+func (um userModel) update(id int, u user) error {
 	u.ID = id
 	_, err := um.db.NamedExec(`
 		UPDATE users
@@ -148,11 +162,12 @@ func (um userModel) update(id int, u user) {
 		WHERE id = :id
 	`, &u)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }
 
-func (gm goalModel) update(id int, g goal) {
+func (gm goalModel) update(id int, g goal) error {
 	g.ID = id
 	_, err := gm.db.NamedExec(`
 		UPDATE goals
@@ -160,11 +175,12 @@ func (gm goalModel) update(id int, g goal) {
 		WHERE id = :id
 	`, &g)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }
 
-func (sm streakModel) update(id int, s streak) {
+func (sm streakModel) update(id int, s streak) error {
 	s.ID = id
 	_, err := sm.db.NamedExec(`
 		UPDATE streaks
@@ -179,8 +195,9 @@ func (sm streakModel) update(id int, s streak) {
 		WHERE id = :id
 	`, &s)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }
 
 /*
