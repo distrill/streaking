@@ -1,16 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/go-sql-driver/mysql"
 )
 
-func printQuery(qs string) {
+func formatQuery(qs string) string {
 	noTabs := strings.Replace(qs, "\t", "", -1)
 	noTabsOrSpaces := strings.Replace(noTabs, "\n", " ", -1)
-	fmt.Println(noTabsOrSpaces)
+	return strings.Trim(noTabsOrSpaces, " ")
 }
 
 func isErrDuplicateEntry(err error) bool {
