@@ -29,7 +29,7 @@ INSERT INTO users_goals VALUES
 
 
 INSERT INTO streaks VALUES
-    (1, 'user 01 goal 01', '200', 'this is how much i would have spent on cigarettes', '2018-04-01', '2018-04-13', 1, 1),
-    (2, 'user 02 goal 01', '300', 'this is how much i would have spent on cigarettes', '2018-03-01', '2018-04-20', 2, 1),
-    (3, 'user 02 goal 02', '300', 'this is how much i would have spent on booze', '2018-02-01', '2018-03-20', 2, 2),
-    (4, 'user 02 goal 03', '500', 'this is how much weight i have lost', '2018-01-01', '2018-04-11', 2, 3);
+    (1, 'user 01 goal 01', '200', 'this is how much i would have spent on cigarettes', 'day', '2018-04-01', '2018-04-13', 1, 1),
+    (2, 'user 02 goal 01', '300', 'this is how much i would have spent on cigarettes', 'day', '2018-03-01', '2018-04-20', 2, 1),
+    (3, 'user 02 goal 02', '300', 'this is how much i would have spent on booze', 'week', '2018-02-01', '2018-03-20', 2, 2),
+    (4, 'user 02 goal 03', '500', 'this is how much weight i have lost', 'week', '2018-01-01', '2018-04-11', 2, 3);

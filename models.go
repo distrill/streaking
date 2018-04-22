@@ -72,8 +72,9 @@ func (sm streakModel) read(search map[string]interface{}) ([]streak, error) {
 		SELECT
 			streaks.id,
 			accumulator_key,
-			accumulator_value,
+			accumulator_increment,
 			accumulator_description,
+			update_interval,
 			date_start,
 			date_end,
 			user_id,
@@ -81,6 +82,8 @@ func (sm streakModel) read(search map[string]interface{}) ([]streak, error) {
 		FROM
 			streaks
 	`, search)
+
+	fmt.Println(qs)
 
 	if err := sm.db.Select(&streakResults, qs); err != nil {
 		return nil, err
@@ -129,16 +132,18 @@ func (sm streakModel) create(s streak) error {
 	_, err := sm.db.NamedExec(`
 		INSERT INTO streaks (
 			accumulator_key,
-			accumulator_value,
+			accumulator_increment,
 			accumulator_description,
+			update_interval,
 			date_start,
 			date_end,
 			user_id,
 			goal_id
 		) VALUES (
 			:accumulator_key,
-			:accumulator_value,
+			:accumulator_increment,
 			:accumulator_description,
+			:update_interval,
 			:date_start,
 			:date_end,
 			:user_id,
@@ -186,10 +191,11 @@ func (sm streakModel) update(id int, s streak) error {
 		UPDATE streaks
 		SET
 			accumulator_key = :accumulator_key,
-			accumulator_value = :accumulator_value,
+			accumulator_increment = :accumulator_increment,
 			accumulator_description = :accumulator_description,
 			date_start = :date_start,
 			date_end = :date_end,
+			update_interval = :update_interval,
 			user_id = :user_id,
 			goal_id = :goal_id
 		WHERE id = :id

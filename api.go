@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -40,12 +41,15 @@ func (h *handler) getUser(c echo.Context) error {
 	var err error
 
 	if us, err = um.read(map[string]interface{}{"id": uid}); err != nil {
+		fmt.Println(err)
 		return err
 	}
 	if gs, err = gm.read(map[string]interface{}{"user_id": uid}); err != nil {
+		fmt.Println(err)
 		return err
 	}
 	if ss, err = sm.read(map[string]interface{}{"user_id": uid}); err != nil {
+		fmt.Println(err)
 		return err
 	}
 
