@@ -51,8 +51,8 @@ DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
   id BIGINT NOT NULL AUTO_INCREMENT,
-  name VARCHAR(255),
-  email VARCHAR(255),
+  name VARCHAR(191),
+  email VARCHAR(191),
 
   PRIMARY KEY (id),
 
@@ -62,7 +62,7 @@ CREATE TABLE users (
 
 CREATE TABLE goals (
   id BIGINT NOT NULL AUTO_INCREMENT,
-  name VARCHAR(255),
+  name VARCHAR(191),
   description text,
 
   PRIMARY KEY (id),
@@ -88,10 +88,10 @@ CREATE TABLE users_goals (
 
 CREATE TABLE streaks (
   id BIGINT NOT NULL AUTO_INCREMENT,
-  accumulator_key VARCHAR(255),
+  accumulator_key VARCHAR(191),
   accumulator_increment text,
   accumulator_description text,
-  update_interval VARCHAR(255),
+  update_interval VARCHAR(191),
   date_start DATE,
   date_end DATE,
   user_id BIGINT,
