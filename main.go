@@ -33,8 +33,8 @@ func main() {
 	e.POST("/users/:user_id/goals", h.createGoal)
 	e.POST("/users/:user_id/streaks", h.createStreak)
 
-	e.PUT("/users/:user_id/goals", h.createGoal)
-	e.PUT("/users/:user_id/streaks", h.createStreak)
+	e.PUT("/users/:user_id/goals", h.updateGoal)
+	e.PUT("/users/:user_id/streaks", h.updateStreak)
 
 	e.DELETE("/users/:user_id/goals", h.deleteGoal)
 	e.DELETE("/users/:user_id/streaks", h.deleteStreak)
