@@ -3,6 +3,7 @@ TODO:
     [X] accumulator_increment should be accumulator_increment
         * accumulator_increment is now derived: (sum increment * ((end - start) * interval))
 
+    [ ] accumulator info should be on goal, not streak
     [ ] more rest-y put endpoints?
     [ ] log with levels
     [ ] login
