@@ -160,12 +160,16 @@ func (sm streakModel) create(s streak) error {
  * Update
  */
 func (um userModel) update(id int, u user) error {
-	u.ID = id
-	_, err := um.db.NamedExec(`
-		UPDATE users
-		SET name = :name, email = :email
-		WHERE id = :id
-	`, &u)
+    u.ID = id
+
+    qs := `
+        UPDATE users
+        SET name = :name, email = :email
+        WHERE id = :id
+    `
+    fmt.Println(formatQuery(qs))
+
+	_, err := um.db.NamedExec(qs, &u)
 	if err != nil {
 		return err
 	}
@@ -173,12 +177,16 @@ func (um userModel) update(id int, u user) error {
 }
 
 func (gm goalModel) update(id int, g goal) error {
-	g.ID = id
-	_, err := gm.db.NamedExec(`
-		UPDATE goals
-		SET name = :name, description = :description
-		WHERE id = :id
-	`, &g)
+    g.ID = id
+
+    qs := `
+        UPDATE goals
+        SET name = :name, description = :description
+        WHERE id = :id
+    `
+    fmt.Println(formatQuery(qs))
+
+	_, err := gm.db.NamedExec(qs, &g)
 	if err != nil {
 		return err
 	}
@@ -186,20 +194,24 @@ func (gm goalModel) update(id int, g goal) error {
 }
 
 func (sm streakModel) update(id int, s streak) error {
-	s.ID = id
-	_, err := sm.db.NamedExec(`
-		UPDATE streaks
-		SET
-			accumulator_key = :accumulator_key,
-			accumulator_increment = :accumulator_increment,
-			accumulator_description = :accumulator_description,
-			date_start = :date_start,
-			date_end = :date_end,
-			update_interval = :update_interval,
-			user_id = :user_id,
-			goal_id = :goal_id
-		WHERE id = :id
-	`, &s)
+    s.ID = id
+
+    qs := `
+        UPDATE streaks
+        SET
+            accumulator_key = :accumulator_key,
+            accumulator_increment = :accumulator_increment,
+            accumulator_description = :accumulator_description,
+            date_start = :date_start,
+            date_end = :date_end,
+            update_interval = :update_interval,
+            user_id = :user_id,
+            goal_id = :goal_id
+        WHERE id = :id
+    `
+    fmt.Println(formatQuery(qs))
+
+	_, err := sm.db.NamedExec(qs, &s)
 	if err != nil {
 		return err
 	}
