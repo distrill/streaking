@@ -11,7 +11,6 @@ type model struct{ db *sqlx.DB }
 type userModel model
 type goalModel model
 type streakModel model
-type userGoalModel model
 
 func applySearch(qs string, search map[string]interface{}) string {
 	if search == nil {
@@ -36,7 +35,9 @@ func applySearch(qs string, search map[string]interface{}) string {
  */
 func (um userModel) read(search map[string]interface{}) ([]user, error) {
 	userResults := []user{}
+
 	qs := applySearch("SELECT * FROM users", search)
+	fmt.Println(formatQuery(qs))
 
 	if err := um.db.Select(&userResults, qs); err != nil {
 		return nil, err
@@ -46,43 +47,50 @@ func (um userModel) read(search map[string]interface{}) ([]user, error) {
 }
 
 func (gm goalModel) read(search map[string]interface{}) ([]goal, error) {
-	goalResults := []goal{}
+	gs := []goal{}
 
-	selectString := "SELECT goals.id, name, description"
+	selectString := `
+		SELECT
+			goals.id,
+			goals.name,
+			goals.description,
+			goals.user_id,
+			goals.update_interval,
+			goals.accumulator_key,
+			goals.accumulator_increment,
+			goals.accumulator_description
+	`
 	fromString := " FROM goals"
 
 	if search["user_id"] != nil {
-		selectString += ", user_id"
-		fromString += " INNER JOIN users_goals ON goals.id = users_goals.goal_id"
+		selectString += ", users.id AS user_id"
+		fromString += " INNER JOIN users ON users.id = goals.user_id"
 	}
 
 	qs := applySearch(selectString+fromString, search)
 	fmt.Println(qs)
 
-	if err := gm.db.Select(&goalResults, qs); err != nil {
+	if err := gm.db.Select(&gs, qs); err != nil {
 		return nil, err
 	}
 
-	return goalResults, nil
+	return gs, nil
 }
 
 func (sm streakModel) read(search map[string]interface{}) ([]streak, error) {
 	streakResults := []streak{}
-	qs := applySearch(`
-		SELECT
-			streaks.id,
-			accumulator_key,
-			accumulator_increment,
-			accumulator_description,
-			update_interval,
-			date_start,
-			date_end,
-			user_id,
-			goal_id
-		FROM
-			streaks
-	`, search)
 
+	selectString := "SELECT streaks.*"
+	fromString := " FROM streaks"
+
+	if search["user_id"] != nil {
+		fromString += `
+			INNER JOIN goals ON goals.id = streaks.goal_id
+			INNER JOIN users ON users.id = goals.user_id
+		`
+	}
+
+	qs := applySearch(selectString+fromString, search)
 	fmt.Println(qs)
 
 	if err := sm.db.Select(&streakResults, qs); err != nil {
@@ -96,63 +104,67 @@ func (sm streakModel) read(search map[string]interface{}) ([]streak, error) {
  * Create
  */
 func (um userModel) create(u user) error {
-	_, err := um.db.NamedExec(`
+	qs := `
 		INSERT INTO users (name, email)
 		VALUES (:name, :email)
-	`, &u)
-	if err != nil {
+	`
+	fmt.Println(formatQuery(qs))
+
+	if _, err := um.db.NamedExec(qs, &u); !isErrDuplicateEntry(err) {
 		return err
 	}
+
 	return nil
 }
 
 func (gm goalModel) create(g goal) error {
-	_, err := gm.db.NamedExec(`
-		INSERT INTO goals (name, description)
-		VALUES (:name, :description)
-	`, &g)
-	if !isErrDuplicateEntry(err) {
-		return err
-	}
-	return nil
-}
+	qs := `
+		INSERT INTO goals (
+			name,
+			description,
+			user_id,
+			update_interval,
+			accumulator_key,
+			accumulator_increment,
+			accumulator_description
+		)
+		VALUES (
+			:name,
+			:description,
+			:user_id,
+			:update_interval,
+			:accumulator_key,
+			:accumulator_increment,
+			:accumulator_description
+		)
+	`
+	fmt.Println(formatQuery(qs))
 
-func (ugm userGoalModel) create(ug userGoal) error {
-	_, err := ugm.db.NamedExec(`
-		INSERT INTO users_goals (user_id, goal_id)
-		VALUES (:user_id, :goal_id)
-	`, &ug)
-	if !isErrDuplicateEntry(err) {
+	if _, err := gm.db.NamedExec(qs, &g); !isErrDuplicateEntry(err) {
 		return err
 	}
+
 	return nil
 }
 
 func (sm streakModel) create(s streak) error {
-	_, err := sm.db.NamedExec(`
+	qs := `
 		INSERT INTO streaks (
-			accumulator_key,
-			accumulator_increment,
-			accumulator_description,
-			update_interval,
 			date_start,
 			date_end,
-			user_id,
 			goal_id
 		) VALUES (
-			:accumulator_key,
-			:accumulator_increment,
-			:accumulator_description,
-			:update_interval,
 			:date_start,
 			:date_end,
-			:user_id,
 			:goal_id
 		)
-	`, &s)
-	if !isErrDuplicateEntry(err) {
+	`
+	fmt.Println(formatQuery(qs))
+
+	if _, err := sm.db.NamedExec(qs, &s); !isErrDuplicateEntry(err) {
 		return err
 	}
+
 	return nil
 }
 
@@ -160,59 +172,59 @@ func (sm streakModel) create(s streak) error {
  * Update
  */
 func (um userModel) update(id int, u user) error {
-    u.ID = id
+	u.ID = id
 
-    qs := `
+	qs := `
         UPDATE users
         SET name = :name, email = :email
         WHERE id = :id
     `
-    fmt.Println(formatQuery(qs))
+	fmt.Println(formatQuery(qs))
 
-	_, err := um.db.NamedExec(qs, &u)
-	if err != nil {
+	if _, err := um.db.NamedExec(qs, &u); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (gm goalModel) update(id int, g goal) error {
-    g.ID = id
+	g.ID = id
 
-    qs := `
-        UPDATE goals
-        SET name = :name, description = :description
-        WHERE id = :id
-    `
-    fmt.Println(formatQuery(qs))
+	qs := `
+		UPDATE goals
+		SET
+			name = :name,
+			description = :description,
+			user_id = :user_id,
+			update_interval = :update_interval,
+			accumulator_key = :accumulator_key,
+			accumulator_increment = :accumulator_increment,
+			accumulator_description = :accumulator_description
+		WHERE id = :id
+	`
+	fmt.Println(formatQuery(qs))
 
-	_, err := gm.db.NamedExec(qs, &g)
-	if err != nil {
+	if _, err := gm.db.NamedExec(qs, &g); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (sm streakModel) update(id int, s streak) error {
-    s.ID = id
+	s.ID = id
 
-    qs := `
-        UPDATE streaks
-        SET
-            accumulator_key = :accumulator_key,
-            accumulator_increment = :accumulator_increment,
-            accumulator_description = :accumulator_description,
-            date_start = :date_start,
-            date_end = :date_end,
-            update_interval = :update_interval,
-            user_id = :user_id,
-            goal_id = :goal_id
-        WHERE id = :id
-    `
-    fmt.Println(formatQuery(qs))
+	qs := `
+		UPDATE streaks
+		SET
+			date_start = :date_start,
+			date_end = :date_end,
+			goal_id = :goal_id
+		WHERE id = :id
+	`
+	fmt.Println(formatQuery(qs))
 
-	_, err := sm.db.NamedExec(qs, &s)
-	if err != nil {
+	if _, err := sm.db.NamedExec(qs, &s); err != nil {
+		fmt.Println(err)
 		return err
 	}
 	return nil

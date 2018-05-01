@@ -9,33 +9,26 @@
   | name  (varchar) |
   | email (varchar) |
   +-----------------+
-  +-----------------------+
-  | goals                 |
-  +-----------------------+
-  | id          (int)     |
-  | name        (varchar) |
-  | description (text)    |
-  +-----------------------+
-  +---------------+
-  | users_goals   |
-  +---------------|
-  | id      (int) |
-  | user_id (int) |
-  | goal_id (int) |
-  +---------------+
-  +--------------------------------------+
-  | streaks                              |
-  +--------------------------------------+
-  | id                      (int)        |
-  | accumulator_key         (varchar)    | *
-  | accumulator_increment   (text)       | *
-  | accumulator_description (text)       | *
-  | date_start        (date)             |
-  | date_end          (date)             |
-  | update_interval   (string)           |
-  | user_id           (int)              |
-  | goal_id           (int)              |
-  +--------------------------------------+
+  +-----------------------------------+
+  | goals                             |
+  +-----------------------------------+
+  | id                      (int)     |
+  | user_id                 (int)     |
+  | name                    (varchar) |
+  | description             (text)    |
+  | update_interval         (string)  |
+  | accumulator_key         (varchar) | *
+  | accumulator_increment   (text)    | *
+  | accumulator_description (text)    | *
+  +-----------------------------------+
+  +-----------------------------------+
+  | streaks                           |
+  +-----------------------------------+
+  | id                      (int)     |
+  | date_start              (date)    |
+  | date_end                (date)    |
+  | goal_id                 (int)     |
+  +-----------------------------------+
   * think money saved not buying cigarettes  
 */
 
@@ -62,47 +55,33 @@ CREATE TABLE users (
 
 CREATE TABLE goals (
   id BIGINT NOT NULL AUTO_INCREMENT,
+  user_id BIGINT,
   name VARCHAR(191),
   description text,
+  update_interval VARCHAR(191),
+  accumulator_key VARCHAR(191),
+  accumulator_increment text,
+  accumulator_description text,
 
   PRIMARY KEY (id),
 
-  UNIQUE KEY (name, description(150))
-);
-
-CREATE TABLE users_goals (
-  id BIGINT NOT NULL AUTO_INCREMENT,
-  user_id BIGINT,
-  goal_id BIGINT,
-
-  PRIMARY KEY (id),
-
-  UNIQUE KEY (user_id, goal_id),
+  UNIQUE KEY (user_id, name),
 
   FOREIGN KEY (user_id)
-  REFERENCES users(id),
-  FOREIGN KEY (goal_id)
-  REFERENCES goals(id)
+  REFERENCES users(id)
 );
 
 
 CREATE TABLE streaks (
   id BIGINT NOT NULL AUTO_INCREMENT,
-  accumulator_key VARCHAR(191),
-  accumulator_increment text,
-  accumulator_description text,
-  update_interval VARCHAR(191),
+  goal_id BIGINT,
   date_start DATE,
   date_end DATE,
-  user_id BIGINT,
-  goal_id BIGINT,
   
   PRIMARY KEY (id),
 
-  UNIQUE KEY (user_id, goal_id, date_start),
+  UNIQUE KEY (goal_id, date_start),
 
-  FOREIGN KEY (user_id)
-  REFERENCES users_goals(id),
   FOREIGN KEY (goal_id)
   REFERENCES goals(id)
 );

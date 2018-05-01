@@ -95,28 +95,9 @@ func (h *handler) createGoal(c echo.Context) error {
 		return err
 	}
 
-	uid, err := strconv.Atoi(c.Param("user_id"))
-	if err != nil {
-		return err
-	}
-
 	gm := goalModel{h.db}
-	ugm := userGoalModel{h.db}
 
-	// insert new goal
 	if err := gm.create(g); err != nil {
-		return err
-	}
-
-	var gs []goal
-	search := map[string]interface{}{"name": g.Name, "description": g.Description}
-	if gs, err = gm.read(search); err != nil {
-		return nil
-	}
-
-	// insert user_goal so user is associated with this goal
-	ug := userGoal{0, uid, gs[0].ID}
-	if err := ugm.create(ug); err != nil {
 		return err
 	}
 
@@ -130,17 +111,11 @@ func (h *handler) createStreak(c echo.Context) error {
 		return err
 	}
 
-	uid, err := strconv.Atoi(c.Param("user_id"))
-	if err != nil {
+	sm := streakModel{h.db}
+
+	if err := sm.create(s); err != nil {
 		return err
 	}
-	ug := userGoal{UserID: uid, GoalID: s.GoalID}
-
-	sm := streakModel{h.db}
-	ugm := userGoalModel{h.db}
-
-	sm.create(s)
-	ugm.create(ug)
 
 	return c.JSON(http.StatusOK, successResponse{true})
 }
@@ -152,8 +127,16 @@ func (h *handler) updateGoal(c echo.Context) error {
 		return err
 	}
 
+	uid, err := strconv.Atoi(c.Param("user_id"))
+	if err != nil {
+		return err
+	}
+	g.UserID = uid
+
 	gm := goalModel{h.db}
-	gm.update(g.ID, g)
+	if err := gm.update(g.ID, g); err != nil {
+		return err
+	}
 
 	return c.JSON(http.StatusOK, successResponse{true})
 }
@@ -165,14 +148,11 @@ func (h *handler) updateStreak(c echo.Context) error {
 		return err
 	}
 
-	uid, err := strconv.Atoi(c.Param("user_id"))
-	if err != nil {
+	sm := streakModel{h.db}
+	if err := sm.update(s.ID, s); err != nil {
+		fmt.Println(err)
 		return err
 	}
-
-	s.UserID = uid
-	sm := streakModel{h.db}
-	sm.update(s.ID, s)
 
 	return c.JSON(http.StatusOK, successResponse{true})
 }
