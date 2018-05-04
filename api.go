@@ -95,8 +95,13 @@ func (h *handler) createGoal(c echo.Context) error {
 		return err
 	}
 
-	gm := goalModel{h.db}
+	uid, err := strconv.Atoi(c.Param("user_id"))
+	if err != nil {
+		return err
+	}
+	g.UserID = uid
 
+	gm := goalModel{h.db}
 	if err := gm.create(g); err != nil {
 		return err
 	}

@@ -118,6 +118,7 @@ func (um userModel) create(u user) error {
 }
 
 func (gm goalModel) create(g goal) error {
+	fmt.Println(g)
 	qs := `
 		INSERT INTO goals (
 			name,
