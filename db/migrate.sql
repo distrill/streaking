@@ -16,6 +16,7 @@
   | user_id                 (int)     |
   | name                    (varchar) |
   | description             (text)    |
+  | color                   (varchar) |
   | update_interval         (string)  |
   | accumulator_key         (varchar) | *
   | accumulator_increment   (text)    | *
@@ -58,6 +59,7 @@ CREATE TABLE goals (
   user_id BIGINT,
   name VARCHAR(191),
   description text,
+  color VARCHAR(191),
   update_interval VARCHAR(191),
   accumulator_key VARCHAR(191),
   accumulator_increment text,

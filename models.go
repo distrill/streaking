@@ -54,6 +54,7 @@ func (gm goalModel) read(search map[string]interface{}) ([]goal, error) {
 			goals.id,
 			goals.name,
 			goals.description,
+			goals.color,
 			goals.user_id,
 			goals.update_interval,
 			goals.accumulator_key,
@@ -123,6 +124,7 @@ func (gm goalModel) create(g goal) error {
 		INSERT INTO goals (
 			name,
 			description,
+			color
 			user_id,
 			update_interval,
 			accumulator_key,
@@ -132,6 +134,7 @@ func (gm goalModel) create(g goal) error {
 		VALUES (
 			:name,
 			:description,
+			:color,
 			:user_id,
 			:update_interval,
 			:accumulator_key,
@@ -196,6 +199,7 @@ func (gm goalModel) update(id int, g goal) error {
 		SET
 			name = :name,
 			description = :description,
+			color = :color,
 			user_id = :user_id,
 			update_interval = :update_interval,
 			accumulator_key = :accumulator_key,

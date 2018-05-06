@@ -20,12 +20,12 @@ INSERT INTO users VALUES
     (3, 'brent 03', 'bh.03@hhindustries.ca');
 
 INSERT INTO goals VALUES
-    (1, 1, '01 first goal', 'the first thing 01 want to get done', 'day', 'cigarette money', '100', 'how much i would have spent on cigarettes'),
-    (2, 2, '02 first goal', 'the first thing 02 want to get done', 'day', 'cigarette money', '120', 'how much i would have spent on cigarettes'),
-    (3, 2, '02 second goal', 'the second thing 02 want to get done', 'day', 'booze money', '230', 'how much i would have spent on booze'),
-    (4, 2, '02 third goal', 'the third thing 02 want to get done', 'week', 'miles run', '5', "miles i've run"),
-    (5, 3, '03 first goal', 'the first thing 03 want to get done', 'week', 'booze money', '150', 'how much i would have spent on booze'),
-    (6, 3, '03 second goal', 'the second thing 02 want to get done', 'week', 'miles run', '3', "miles i've run");
+    (1, 1, '01 first goal', 'the first thing 01 want to get done', 'teal', 'day', 'cigarette money', '100', 'how much i would have spent on cigarettes'),
+    (2, 2, '02 first goal', 'the first thing 02 want to get done', 'indigo', 'day', 'cigarette money', '120', 'how much i would have spent on cigarettes'),
+    (3, 2, '02 second goal', 'the second thing 02 want to get done', 'light-blue', 'day', 'booze money', '230', 'how much i would have spent on booze'),
+    (4, 2, '02 third goal', 'the third thing 02 want to get done', 'teal', 'week', 'miles run', '5', "miles i've run"),
+    (5, 3, '03 first goal', 'the first thing 03 want to get done', 'indigo', 'week', 'booze money', '150', 'how much i would have spent on booze'),
+    (6, 3, '03 second goal', 'the second thing 02 want to get done', 'light-blue', 'week', 'miles run', '3', "miles i've run");
 
 INSERT INTO streaks VALUES
     (1, 1, '2018-04-01', '2018-04-13'),

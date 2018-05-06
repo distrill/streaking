@@ -1,0 +1,6 @@
+#! /bin/bash
+
+cd db
+./clean.sh
+cd ..
+go run *.go

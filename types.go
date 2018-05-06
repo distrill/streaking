@@ -13,6 +13,7 @@ type goal struct {
 	ID                     int    `db:"id" json:"id"`
 	Name                   string `db:"name" json:"name"`
 	Description            string `db:"description" json:"description"`
+	Color                  string `db:"color" json:"color"`
 	UserID                 int    `db:"user_id" json:"user_id"`
 	UpdateInterval         string `db:"update_interval" json:"update_interval"`
 	AccumulatorKey         string `db:"accumulator_key" json:"accumulator_key"`
