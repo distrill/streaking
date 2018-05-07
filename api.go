@@ -125,13 +125,14 @@ func (h *handler) createStreak(c echo.Context) error {
 	return c.JSON(http.StatusOK, successResponse{true})
 }
 
-// PUT /users/:user_id/goals
+// PUT /users/:user_id/goals/:goal_id
 func (h *handler) updateGoal(c echo.Context) error {
 	g := goal{}
 	if err := c.Bind(&g); err != nil {
 		return err
 	}
 
+	gid, err := strconv.Atoi(c.Param("goal_id"))
 	uid, err := strconv.Atoi(c.Param("user_id"))
 	if err != nil {
 		return err
@@ -139,22 +140,27 @@ func (h *handler) updateGoal(c echo.Context) error {
 	g.UserID = uid
 
 	gm := goalModel{h.db}
-	if err := gm.update(g.ID, g); err != nil {
+	if err := gm.update(gid, g); err != nil {
 		return err
 	}
 
 	return c.JSON(http.StatusOK, successResponse{true})
 }
 
-// PUT /users/:user_id/streaks
+// PUT /users/:user_id/streaks/:streak_id
 func (h *handler) updateStreak(c echo.Context) error {
 	s := streak{}
 	if err := c.Bind(&s); err != nil {
 		return err
 	}
 
+	sid, err := strconv.Atoi(c.Param("streak_id"))
+	if err != nil {
+		return err
+	}
+
 	sm := streakModel{h.db}
-	if err := sm.update(s.ID, s); err != nil {
+	if err := sm.update(sid, s); err != nil {
 		fmt.Println(err)
 		return err
 	}
@@ -164,39 +170,39 @@ func (h *handler) updateStreak(c echo.Context) error {
 
 // DELTE /users/:user_id
 func (h *handler) deleteUser(c echo.Context) error {
-	i := struct{ ID int }{}
-	if err := c.Bind(&i); err != nil {
+	uid, err := strconv.Atoi(c.Param("user_id"))
+	if err != nil {
 		return err
 	}
 
 	um := userModel{h.db}
-	um.delete(i.ID)
+	um.delete(uid)
 
 	return c.JSON(http.StatusOK, successResponse{true})
 }
 
-// DELETE /users/:user_id/goals
+// DELETE /users/:user_id/goals/:goal_id
 func (h *handler) deleteGoal(c echo.Context) error {
-	i := struct{ ID int }{}
-	if err := c.Bind(&i); err != nil {
+	gid, err := strconv.Atoi(c.Param("goal_id"))
+	if err != nil {
 		return err
 	}
 
 	gm := goalModel{h.db}
-	gm.delete(i.ID)
+	gm.delete(gid)
 
 	return c.JSON(http.StatusOK, successResponse{true})
 }
 
-// DELETE /users/:user_id/streaks
+// DELETE /users/:user_id/streaks/:streak_id
 func (h *handler) deleteStreak(c echo.Context) error {
-	i := struct{ ID int }{}
-	if err := c.Bind(&i); err != nil {
+	sid, err := strconv.Atoi(c.Param("streak_id"))
+	if err != nil {
 		return err
 	}
 
 	sm := streakModel{h.db}
-	sm.delete(i.ID)
+	sm.delete(sid)
 
 	return c.JSON(http.StatusOK, successResponse{true})
 }
