@@ -5,10 +5,10 @@ TODO:
 
     [X] interval should be on goal
     [X] accumulator info should be on goal, not streak
-    [ ] more rest-y put endpoints?
-    [ ] log with levels
     [ ] login
-        [ ] streaking
-        [ ] google
         [ ] facebook
         [ ] github
+        [ ] streaking
+        [ ] google
+    [ ] more rest-y put endpoints?
+    [ ] log with levels

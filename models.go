@@ -124,7 +124,7 @@ func (gm goalModel) create(g goal) error {
 		INSERT INTO goals (
 			name,
 			description,
-			color
+			color,
 			user_id,
 			update_interval,
 			accumulator_key,

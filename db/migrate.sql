@@ -2,13 +2,15 @@
   Streaking - productivity/etc streak tracking
   Brent Hamilton <hamilton.bh9@gmail.com>
 
-  +-----------------+
-  | users           |
-  +-----------------|
-  | id    (int)     |
-  | name  (varchar) |
-  | email (varchar) |
-  +-----------------+
+  +-----------------------+
+  | users                 |
+  +-----------------------|
+  | id          (int)     |
+  | name        (varchar) |
+  | email       (varchar) |
+  | source      (varchar) |
+  | external_id (varchar) |
+  +-----------------------+
   +-----------------------------------+
   | goals                             |
   +-----------------------------------+
@@ -47,10 +49,12 @@ CREATE TABLE users (
   id BIGINT NOT NULL AUTO_INCREMENT,
   name VARCHAR(191),
   email VARCHAR(191),
+  source VARCHAR(191),
+  external_id VARCHAR(191),
 
   PRIMARY KEY (id),
 
-  UNIQUE KEY (email)
+  UNIQUE KEY (email, source, external_id)
 );
 
 
@@ -70,7 +74,7 @@ CREATE TABLE goals (
   UNIQUE KEY (user_id, name),
 
   FOREIGN KEY (user_id)
-  REFERENCES users(id)
+    REFERENCES users(id)
 );
 
 
@@ -85,5 +89,6 @@ CREATE TABLE streaks (
   UNIQUE KEY (goal_id, date_start),
 
   FOREIGN KEY (goal_id)
-  REFERENCES goals(id)
+    REFERENCES goals(id)
+    ON DELETE CASCADE
 );
