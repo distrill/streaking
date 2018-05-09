@@ -10,6 +10,8 @@ TODO:
         [X] github
         [ ] streaking
         [X] google
+        [ ] upsert user
+        [ ] session
     [ ] more rest-y put endpoints?
     [ ] log with levels
     [ ] fix weird model names (model package, User struct type, userModel interface :gun:)
