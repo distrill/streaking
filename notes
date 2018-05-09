@@ -6,9 +6,10 @@ TODO:
     [X] interval should be on goal
     [X] accumulator info should be on goal, not streak
     [ ] login
-        [ ] facebook
-        [ ] github
+        [X] facebook
+        [X] github
         [ ] streaking
-        [ ] google
+        [X] google
     [ ] more rest-y put endpoints?
     [ ] log with levels
+    [ ] fix weird model names (model package, User struct type, userModel interface :gun:)

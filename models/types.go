@@ -1,15 +1,20 @@
-package main
+package models
 
 /*
  * data types, from db and written to json
  */
-type user struct {
-	ID    int    `db:"id" json:"id"`
-	Name  string `db:"name" json:"name"`
-	Email string `db:"email" json:"email"`
+
+// User - users
+type User struct {
+	ID         int    `db:"id" json:"id"`
+	Name       string `db:"name" json:"name"`
+	Email      string `db:"email" json:"email"`
+	Source     string `db:"source" json:"source"`
+	ExternalID string `db:"external_id" json:"external_id"`
 }
 
-type goal struct {
+// Goal - goals
+type Goal struct {
 	ID                     int    `db:"id" json:"id"`
 	Name                   string `db:"name" json:"name"`
 	Description            string `db:"description" json:"description"`
@@ -21,7 +26,8 @@ type goal struct {
 	AccumulatorDescription string `db:"accumulator_description" json:"accumulator_description"`
 }
 
-type streak struct {
+// Streak - streaks
+type Streak struct {
 	ID        int    `db:"id" json:"id"`
 	DateStart string `db:"date_start" json:"date_start"`
 	DateEnd   string `db:"date_end" json:"date_end"`

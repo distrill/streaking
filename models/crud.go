@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"fmt"
@@ -33,8 +33,8 @@ func applySearch(qs string, search map[string]interface{}) string {
 /*
  * Read
  */
-func (um userModel) read(search map[string]interface{}) ([]user, error) {
-	userResults := []user{}
+func (um userModel) read(search map[string]interface{}) ([]User, error) {
+	userResults := []User{}
 
 	qs := applySearch("SELECT * FROM users", search)
 	fmt.Println(formatQuery(qs))
@@ -46,8 +46,8 @@ func (um userModel) read(search map[string]interface{}) ([]user, error) {
 	return userResults, nil
 }
 
-func (gm goalModel) read(search map[string]interface{}) ([]goal, error) {
-	gs := []goal{}
+func (gm goalModel) read(search map[string]interface{}) ([]Goal, error) {
+	gs := []Goal{}
 
 	selectString := `
 		SELECT
@@ -78,8 +78,8 @@ func (gm goalModel) read(search map[string]interface{}) ([]goal, error) {
 	return gs, nil
 }
 
-func (sm streakModel) read(search map[string]interface{}) ([]streak, error) {
-	streakResults := []streak{}
+func (sm streakModel) read(search map[string]interface{}) ([]Streak, error) {
+	streakResults := []Streak{}
 
 	selectString := "SELECT streaks.*"
 	fromString := " FROM streaks"
@@ -104,7 +104,7 @@ func (sm streakModel) read(search map[string]interface{}) ([]streak, error) {
 /*
  * Create
  */
-func (um userModel) create(u user) error {
+func (um userModel) create(u User) error {
 	qs := `
 		INSERT INTO users (name, email)
 		VALUES (:name, :email)
@@ -118,7 +118,7 @@ func (um userModel) create(u user) error {
 	return nil
 }
 
-func (gm goalModel) create(g goal) error {
+func (gm goalModel) create(g Goal) error {
 	fmt.Println(g)
 	qs := `
 		INSERT INTO goals (
@@ -151,7 +151,7 @@ func (gm goalModel) create(g goal) error {
 	return nil
 }
 
-func (sm streakModel) create(s streak) error {
+func (sm streakModel) create(s Streak) error {
 	qs := `
 		INSERT INTO streaks (
 			date_start,
@@ -175,7 +175,7 @@ func (sm streakModel) create(s streak) error {
 /*
  * Update
  */
-func (um userModel) update(id int, u user) error {
+func (um userModel) update(id int, u User) error {
 	u.ID = id
 
 	qs := `
@@ -191,7 +191,7 @@ func (um userModel) update(id int, u user) error {
 	return nil
 }
 
-func (gm goalModel) update(id int, g goal) error {
+func (gm goalModel) update(id int, g Goal) error {
 	g.ID = id
 
 	qs := `
@@ -215,7 +215,7 @@ func (gm goalModel) update(id int, g goal) error {
 	return nil
 }
 
-func (sm streakModel) update(id int, s streak) error {
+func (sm streakModel) update(id int, s Streak) error {
 	s.ID = id
 
 	qs := `

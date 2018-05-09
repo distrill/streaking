@@ -4,13 +4,22 @@ import (
 	"net/http"
 
 	"bh/streaking/auth/facebook"
+	"bh/streaking/auth/github"
+	"bh/streaking/auth/google"
 
 	"github.com/labstack/echo"
 )
 
-const htmlIndex = `<html><body>
-Logged in with <a href="/login">facebook</a>
-</body></html>
+const htmlIndex = `
+<html>
+	<body>
+		Log in with <a href="/login/facebook">facebook</a>
+		<br />
+		Log in with <a href="/login/github">github</a>
+		<br />
+		Log in with <a href="/login/google">google</a>
+	</body>
+</html>
 `
 
 func handleMain(c echo.Context) error {
@@ -22,8 +31,14 @@ func main() {
 
 	e.GET("/", handleMain)
 
-	e.GET("/login/facebook", facebook.HandleLogin)
-	e.GET("/callback/facebook", facebook.HandleCallback)
+	e.GET("/login/facebook", facebook.HandleLogin())
+	e.GET("/callback/facebook", facebook.HandleCallback())
+
+	e.GET("/login/github", github.HandleLogin())
+	e.GET("/callback/github", github.HandleCallback())
+
+	e.GET("/login/google", google.HandleLogin())
+	e.GET("/callback/google", google.HandleCallback())
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
