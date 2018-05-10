@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/jmoiron/sqlx"
+
 	"github.com/labstack/echo"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/facebook"
@@ -15,7 +17,7 @@ var settings = auth.Settings{
 	OauthConf: &oauth2.Config{
 		ClientID:     "226042608152816",
 		ClientSecret: "617e257795853d28e562ebecd14e400f",
-		RedirectURL:  "https://770a504c.ngrok.io/callback/facebook",
+		RedirectURL:  "https://d36b29a6.ngrok.io/callback/facebook",
 		Scopes:       []string{"public_profile", "email"},
 		Endpoint:     facebook.Endpoint,
 	},
@@ -55,6 +57,7 @@ func HandleLogin() echo.HandlerFunc {
 }
 
 // HandleCallback - handle facebook callback
-func HandleCallback() echo.HandlerFunc {
+func HandleCallback(db *sqlx.DB) echo.HandlerFunc {
+	settings.DB = db
 	return auth.BuildCallbackHandler(settings)
 }

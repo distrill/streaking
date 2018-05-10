@@ -41,15 +41,15 @@ func (h *handler) getUser(c echo.Context) error {
 	var ss []models.Streak
 	var err error
 
-	if us, err = um.read(map[string]interface{}{"id": uid}); err != nil {
+	if us, err = um.Read(map[string]interface{}{"id": uid}); err != nil {
 		fmt.Println(err)
 		return err
 	}
-	if gs, err = gm.read(map[string]interface{}{"user_id": uid}); err != nil {
+	if gs, err = gm.Read(map[string]interface{}{"user_id": uid}); err != nil {
 		fmt.Println(err)
 		return err
 	}
-	if ss, err = sm.read(map[string]interface{}{"user_id": uid}); err != nil {
+	if ss, err = sm.Read(map[string]interface{}{"user_id": uid}); err != nil {
 		fmt.Println(err)
 		return err
 	}
@@ -68,7 +68,7 @@ func (h *handler) getGoals(c echo.Context) error {
 	var gs []goal
 	var err error
 
-	if gs, err = gm.read(map[string]interface{}{"user_id": uid}); err != nil {
+	if gs, err = gm.Read(map[string]interface{}{"user_id": uid}); err != nil {
 		return err
 	}
 
@@ -82,7 +82,7 @@ func (h *handler) getStreaks(c echo.Context) error {
 	var ss []streak
 	var err error
 
-	if ss, err = sm.read(map[string]interface{}{"user_id": uid}); err != nil {
+	if ss, err = sm.Read(map[string]interface{}{"user_id": uid}); err != nil {
 		return err
 	}
 

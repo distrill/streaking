@@ -15,9 +15,9 @@ DELETE FROM users;
 
 -- let there be insertions
 INSERT INTO users VALUES
-    (1, 'brent 01', 'bh.01@hhindustries.ca'),
-    (2, 'brent 02', 'bh.02@hhindustries.ca'),
-    (3, 'brent 03', 'bh.03@hhindustries.ca');
+    (1, 'brent 01', 'bh.01@hhindustries.ca', 'STREAKING', '12345'),
+    (2, 'brent 02', 'bh.02@hhindustries.ca', 'STREAKING', '23456'),
+    (3, 'brent 03', 'bh.03@hhindustries.ca', 'STREAKING', '34567');
 
 INSERT INTO goals VALUES
     (1, 1, '01 first goal', 'the first thing 01 want to get done', 'teal', 'day', 'cigarette money', '100', 'how much i would have spent on cigarettes'),

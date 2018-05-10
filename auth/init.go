@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/jmoiron/sqlx"
+
 	"github.com/labstack/echo"
 	"golang.org/x/oauth2"
 )
@@ -18,7 +20,13 @@ type Settings struct {
 	OauthConf        *oauth2.Config
 	OauthStateString string
 	BaseURL          string
+	DB               *sqlx.DB
 	GetUser          func(string) models.User
+}
+
+func retrieveUser(u models.User) models.User {
+
+	return u
 }
 
 // BuildLoginHandler build login handler given oauth conf and oauth state string
@@ -77,9 +85,22 @@ func BuildCallbackHandler(settings Settings) echo.HandlerFunc {
 			return c.Redirect(http.StatusTemporaryRedirect, "/")
 		}
 
-		// TODO upsert user in db, session
 		u := settings.GetUser(string(response))
-		fmt.Println(u)
+		um := models.Users{DB: settings.DB}
+		if err := um.Create(u); err != nil {
+			log.Fatal(err)
+		}
+		user, err := um.Read(map[string]interface{}{
+			"name":        u.Name,
+			"email":       u.Email,
+			"source":      u.Source,
+			"external_id": u.ExternalID,
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(user)
+
 		return c.Redirect(http.StatusTemporaryRedirect, "/")
 	}
 }

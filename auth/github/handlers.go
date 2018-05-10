@@ -7,6 +7,8 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/jmoiron/sqlx"
+
 	"github.com/labstack/echo"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
@@ -56,6 +58,7 @@ func HandleLogin() echo.HandlerFunc {
 }
 
 // HandleCallback - handle facebook callback
-func HandleCallback() echo.HandlerFunc {
+func HandleCallback(db *sqlx.DB) echo.HandlerFunc {
+	settings.DB = db
 	return auth.BuildCallbackHandler(settings)
 }

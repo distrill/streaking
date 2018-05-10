@@ -109,8 +109,8 @@ func (sm Streaks) Read(search map[string]interface{}) ([]Streak, error) {
 // Create - create given user
 func (um Users) Create(u User) error {
 	qs := `
-		INSERT INTO users (name, email)
-		VALUES (:name, :email)
+		INSERT INTO users (name, email, source, external_id)
+		VALUES (:name, :email, :source, :external_id)
 	`
 	fmt.Println(formatQuery(qs))
 
@@ -183,7 +183,11 @@ func (um Users) Update(id int, u User) error {
 
 	qs := `
         UPDATE users
-        SET name = :name, email = :email
+				SET
+					name = :name,
+					email = :email,
+					source = :source,
+					external_id = :external_id
         WHERE id = :id
     `
 	fmt.Println(formatQuery(qs))

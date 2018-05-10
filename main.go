@@ -1,12 +1,14 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"bh/streaking/auth/facebook"
 	"bh/streaking/auth/github"
 	"bh/streaking/auth/google"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
 )
 
@@ -27,18 +29,23 @@ func handleMain(c echo.Context) error {
 }
 
 func main() {
+	db, err := sqlx.Connect("mysql", "streaking:streaking@/streaking")
+	if err != nil {
+		log.Panic(err)
+	}
+
 	e := echo.New()
 
 	e.GET("/", handleMain)
 
 	e.GET("/login/facebook", facebook.HandleLogin())
-	e.GET("/callback/facebook", facebook.HandleCallback())
+	e.GET("/callback/facebook", facebook.HandleCallback(db))
 
 	e.GET("/login/github", github.HandleLogin())
-	e.GET("/callback/github", github.HandleCallback())
+	e.GET("/callback/github", github.HandleCallback(db))
 
 	e.GET("/login/google", google.HandleLogin())
-	e.GET("/callback/google", google.HandleCallback())
+	e.GET("/callback/google", google.HandleCallback(db))
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

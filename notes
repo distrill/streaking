@@ -9,10 +9,10 @@ TODO:
     [.] login
         [X] facebook
         [X] github
-        [ ] streaking
         [X] google
-        [ ] upsert user
+        [X] upsert user
         [ ] session
         [ ] protected routes (middlewares)
+        [ ] streaking
     [.] more rest-y put endpoints? (kind of done, consider /me)
     [ ] log with levels
