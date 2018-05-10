@@ -115,6 +115,41 @@ func BuildCallbackHandler(settings Settings) echo.HandlerFunc {
 		sess.Values["user"] = user.ID
 		sess.Save(c.Request(), c.Response())
 
-		return c.Redirect(http.StatusTemporaryRedirect, "/")
+		// should redirect to app url
+		return c.Redirect(http.StatusFound, "/api/users/2")
 	}
+}
+
+// IsLoggedIn - middleware to ensure user is logged in
+func IsLoggedIn(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		sess, _ := session.Get("session", c)
+		sess.Options = &sessions.Options{
+			Path:     "/",
+			MaxAge:   86400 * 7,
+			HttpOnly: true,
+		}
+		user := sess.Values["user"]
+		fmt.Println(user)
+
+		if user != nil {
+			return next(c)
+		}
+
+		return c.Redirect(http.StatusFound, "/")
+	}
+}
+
+// Logout - log user out
+func Logout(c echo.Context) error {
+	sess, _ := session.Get("session", c)
+	sess.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 7,
+		HttpOnly: true,
+	}
+	sess.Values["user"] = nil
+	sess.Save(c.Request(), c.Response())
+
+	return c.Redirect(http.StatusFound, "/")
 }

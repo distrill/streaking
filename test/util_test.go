@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"testing"
 
+	"bh/streaking/models"
+
 	"github.com/jmoiron/sqlx"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -11,7 +13,7 @@ import (
 
 func TestFormatQuery(t *testing.T) {
 	expected := "SELECT * FROM table"
-	actual := formatQuery(`
+	actual := models.FormatQuery(`
 		SELECT *
 		FROM table
 		`)

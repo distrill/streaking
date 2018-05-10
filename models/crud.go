@@ -42,7 +42,7 @@ func (um Users) Read(search map[string]interface{}) ([]User, error) {
 	userResults := []User{}
 
 	qs := applySearch("SELECT * FROM users", search)
-	fmt.Println(formatQuery(qs))
+	fmt.Println(FormatQuery(qs))
 
 	if err := um.DB.Select(&userResults, qs); err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func (um Users) Create(u User) error {
 		INSERT INTO users (name, email, source, external_id)
 		VALUES (:name, :email, :source, :external_id)
 	`
-	fmt.Println(formatQuery(qs))
+	fmt.Println(FormatQuery(qs))
 
 	if _, err := um.DB.NamedExec(qs, &u); !isErrDuplicateEntry(err) {
 		return err
@@ -146,7 +146,7 @@ func (gm Goals) Create(g Goal) error {
 			:accumulator_description
 		)
 	`
-	fmt.Println(formatQuery(qs))
+	fmt.Println(FormatQuery(qs))
 
 	if _, err := gm.DB.NamedExec(qs, &g); !isErrDuplicateEntry(err) {
 		return err
@@ -168,7 +168,7 @@ func (sm Streaks) Create(s Streak) error {
 			:goal_id
 		)
 	`
-	fmt.Println(formatQuery(qs))
+	fmt.Println(FormatQuery(qs))
 
 	if _, err := sm.DB.NamedExec(qs, &s); !isErrDuplicateEntry(err) {
 		return err
@@ -190,7 +190,7 @@ func (um Users) Update(id int, u User) error {
 					external_id = :external_id
         WHERE id = :id
     `
-	fmt.Println(formatQuery(qs))
+	fmt.Println(FormatQuery(qs))
 
 	if _, err := um.DB.NamedExec(qs, &u); err != nil {
 		return err
@@ -215,7 +215,7 @@ func (gm Goals) Update(id int, g Goal) error {
 			accumulator_description = :accumulator_description
 		WHERE id = :id
 	`
-	fmt.Println(formatQuery(qs))
+	fmt.Println(FormatQuery(qs))
 
 	if _, err := gm.DB.NamedExec(qs, &g); err != nil {
 		return err
@@ -235,7 +235,7 @@ func (sm Streaks) Update(id int, s Streak) error {
 			goal_id = :goal_id
 		WHERE id = :id
 	`
-	fmt.Println(formatQuery(qs))
+	fmt.Println(FormatQuery(qs))
 
 	if _, err := sm.DB.NamedExec(qs, &s); err != nil {
 		fmt.Println(err)

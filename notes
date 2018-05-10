@@ -6,13 +6,14 @@ TODO:
     [X] interval should be on goal
     [X] accumulator info should be on goal, not streak
     [X] fix weird model names (model package, User struct type, userModel interface :gun:)
-    [.] login
+    [X] login
         [X] facebook
         [X] github
         [X] google
         [X] upsert user
         [X] session
-        [ ] protected routes (middlewares)
-        [ ] streaking
+        [X] protected routes (middlewares)
+        [X] logout
     [.] more rest-y put endpoints? (kind of done, consider /me)
     [ ] log with levels
+    [ ] streaking (email) login

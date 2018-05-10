@@ -6,7 +6,8 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
-func formatQuery(qs string) string {
+// FormatQuery - remove additional whitespace for printing
+func FormatQuery(qs string) string {
 	noTabs := strings.Replace(qs, "\t", "", -1)
 	noTabsOrSpaces := strings.Replace(noTabs, "\n", " ", -1)
 	return strings.Trim(noTabsOrSpaces, " ")

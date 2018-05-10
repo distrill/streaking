@@ -55,17 +55,17 @@ func (h *handler) getUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, &struct {
-		User    user     `json:"user"`
-		Goals   []goal   `json:"goals"`
-		Streaks []streak `json:"streaks"`
+		Users   models.User     `json:"user"`
+		Goals   []models.Goal   `json:"goals"`
+		Streaks []models.Streak `json:"streaks"`
 	}{us[0], gs, ss})
 }
 
 // GET /users/:user_id/goals
 func (h *handler) getGoals(c echo.Context) error {
-	gm := Goals{h.db}
+	gm := models.Goals{h.db}
 	uid := c.Param("user_id")
-	var gs []goal
+	var gs []models.Goal
 	var err error
 
 	if gs, err = gm.Read(map[string]interface{}{"user_id": uid}); err != nil {
@@ -77,9 +77,9 @@ func (h *handler) getGoals(c echo.Context) error {
 
 // GET /users/:user_id/streaks
 func (h *handler) getStreaks(c echo.Context) error {
-	sm := Streaks{h.db}
+	sm := models.Streaks{h.db}
 	uid := c.Param("user_id")
-	var ss []streak
+	var ss []models.Streak
 	var err error
 
 	if ss, err = sm.Read(map[string]interface{}{"user_id": uid}); err != nil {
@@ -91,7 +91,7 @@ func (h *handler) getStreaks(c echo.Context) error {
 
 // POST /users/:user_id/goals
 func (h *handler) createGoal(c echo.Context) error {
-	g := goal{}
+	g := models.Goal{}
 	if err := c.Bind(&g); err != nil {
 		return err
 	}
@@ -102,8 +102,8 @@ func (h *handler) createGoal(c echo.Context) error {
 	}
 	g.UserID = uid
 
-	gm := Goals{h.db}
-	if err := gm.create(g); err != nil {
+	gm := models.Goals{h.db}
+	if err := gm.Create(g); err != nil {
 		return err
 	}
 
@@ -112,14 +112,14 @@ func (h *handler) createGoal(c echo.Context) error {
 
 // POST /users/:user_id/streaks
 func (h *handler) createStreak(c echo.Context) error {
-	s := streak{}
+	s := models.Streak{}
 	if err := c.Bind(&s); err != nil {
 		return err
 	}
 
-	sm := Streaks{h.db}
+	sm := models.Streaks{h.db}
 
-	if err := sm.create(s); err != nil {
+	if err := sm.Create(s); err != nil {
 		return err
 	}
 
@@ -128,7 +128,7 @@ func (h *handler) createStreak(c echo.Context) error {
 
 // PUT /users/:user_id/goals/:goal_id
 func (h *handler) updateGoal(c echo.Context) error {
-	g := goal{}
+	g := models.Goal{}
 	if err := c.Bind(&g); err != nil {
 		return err
 	}
@@ -140,8 +140,8 @@ func (h *handler) updateGoal(c echo.Context) error {
 	}
 	g.UserID = uid
 
-	gm := Goals{h.db}
-	if err := gm.update(gid, g); err != nil {
+	gm := models.Goals{h.db}
+	if err := gm.Update(gid, g); err != nil {
 		return err
 	}
 
@@ -150,7 +150,7 @@ func (h *handler) updateGoal(c echo.Context) error {
 
 // PUT /users/:user_id/streaks/:streak_id
 func (h *handler) updateStreak(c echo.Context) error {
-	s := streak{}
+	s := models.Streak{}
 	if err := c.Bind(&s); err != nil {
 		return err
 	}
@@ -160,8 +160,8 @@ func (h *handler) updateStreak(c echo.Context) error {
 		return err
 	}
 
-	sm := Streaks{h.db}
-	if err := sm.update(sid, s); err != nil {
+	sm := models.Streaks{h.db}
+	if err := sm.Update(sid, s); err != nil {
 		fmt.Println(err)
 		return err
 	}
@@ -177,7 +177,7 @@ func (h *handler) deleteUser(c echo.Context) error {
 	}
 
 	um := models.Users{h.db}
-	um.delete(uid)
+	um.Delete(uid)
 
 	return c.JSON(http.StatusOK, successResponse{true})
 }
@@ -189,8 +189,8 @@ func (h *handler) deleteGoal(c echo.Context) error {
 		return err
 	}
 
-	gm := Goals{h.db}
-	gm.delete(gid)
+	gm := models.Goals{h.db}
+	gm.Delete(gid)
 
 	return c.JSON(http.StatusOK, successResponse{true})
 }
@@ -202,8 +202,8 @@ func (h *handler) deleteStreak(c echo.Context) error {
 		return err
 	}
 
-	sm := Streaks{h.db}
-	sm.delete(sid)
+	sm := models.Streaks{h.db}
+	sm.Delete(sid)
 
 	return c.JSON(http.StatusOK, successResponse{true})
 }
