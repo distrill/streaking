@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bh/streaking/models"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -19,8 +20,8 @@ type successResponse struct {
 
 // GET /users
 func (h *handler) getUsers(c echo.Context) error {
-	um := userModel{h.db}
-	us, err := um.read(nil)
+	um := models.Users{h.db}
+	us, err := um.Read(nil)
 	if err != nil {
 		return err
 	}
@@ -29,15 +30,15 @@ func (h *handler) getUsers(c echo.Context) error {
 
 // GET /users/:user_id
 func (h *handler) getUser(c echo.Context) error {
-	um := userModel{h.db}
-	gm := goalModel{h.db}
-	sm := streakModel{h.db}
+	um := models.Users{h.db}
+	gm := models.Goals{h.db}
+	sm := models.Streaks{h.db}
 
 	uid := c.Param("user_id")
 
-	var us []user
-	var gs []goal
-	var ss []streak
+	var us []models.User
+	var gs []models.Goal
+	var ss []models.Streak
 	var err error
 
 	if us, err = um.read(map[string]interface{}{"id": uid}); err != nil {
@@ -62,7 +63,7 @@ func (h *handler) getUser(c echo.Context) error {
 
 // GET /users/:user_id/goals
 func (h *handler) getGoals(c echo.Context) error {
-	gm := goalModel{h.db}
+	gm := Goals{h.db}
 	uid := c.Param("user_id")
 	var gs []goal
 	var err error
@@ -76,7 +77,7 @@ func (h *handler) getGoals(c echo.Context) error {
 
 // GET /users/:user_id/streaks
 func (h *handler) getStreaks(c echo.Context) error {
-	sm := streakModel{h.db}
+	sm := Streaks{h.db}
 	uid := c.Param("user_id")
 	var ss []streak
 	var err error
@@ -101,7 +102,7 @@ func (h *handler) createGoal(c echo.Context) error {
 	}
 	g.UserID = uid
 
-	gm := goalModel{h.db}
+	gm := Goals{h.db}
 	if err := gm.create(g); err != nil {
 		return err
 	}
@@ -116,7 +117,7 @@ func (h *handler) createStreak(c echo.Context) error {
 		return err
 	}
 
-	sm := streakModel{h.db}
+	sm := Streaks{h.db}
 
 	if err := sm.create(s); err != nil {
 		return err
@@ -139,7 +140,7 @@ func (h *handler) updateGoal(c echo.Context) error {
 	}
 	g.UserID = uid
 
-	gm := goalModel{h.db}
+	gm := Goals{h.db}
 	if err := gm.update(gid, g); err != nil {
 		return err
 	}
@@ -159,7 +160,7 @@ func (h *handler) updateStreak(c echo.Context) error {
 		return err
 	}
 
-	sm := streakModel{h.db}
+	sm := Streaks{h.db}
 	if err := sm.update(sid, s); err != nil {
 		fmt.Println(err)
 		return err
@@ -175,7 +176,7 @@ func (h *handler) deleteUser(c echo.Context) error {
 		return err
 	}
 
-	um := userModel{h.db}
+	um := models.Users{h.db}
 	um.delete(uid)
 
 	return c.JSON(http.StatusOK, successResponse{true})
@@ -188,7 +189,7 @@ func (h *handler) deleteGoal(c echo.Context) error {
 		return err
 	}
 
-	gm := goalModel{h.db}
+	gm := Goals{h.db}
 	gm.delete(gid)
 
 	return c.JSON(http.StatusOK, successResponse{true})
@@ -201,7 +202,7 @@ func (h *handler) deleteStreak(c echo.Context) error {
 		return err
 	}
 
-	sm := streakModel{h.db}
+	sm := Streaks{h.db}
 	sm.delete(sid)
 
 	return c.JSON(http.StatusOK, successResponse{true})

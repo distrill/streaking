@@ -41,7 +41,7 @@ func getUser(res string) models.User {
 		temp.Email = "NO_EMAIL_GIVEN"
 	}
 
-	return types.User{
+	return models.User{
 		Name:       temp.Name,
 		Email:      temp.Email,
 		Source:     "FACEBOOK",

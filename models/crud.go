@@ -6,11 +6,16 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type model struct{ db *sqlx.DB }
+type model struct{ DB *sqlx.DB }
 
-type userModel model
-type goalModel model
-type streakModel model
+// Users - users model
+type Users model
+
+// Goals - goals model
+type Goals model
+
+// Streaks - streaks model
+type Streaks model
 
 func applySearch(qs string, search map[string]interface{}) string {
 	if search == nil {
@@ -33,20 +38,20 @@ func applySearch(qs string, search map[string]interface{}) string {
 /*
  * Read
  */
-func (um userModel) read(search map[string]interface{}) ([]User, error) {
+func (um Users) Read(search map[string]interface{}) ([]User, error) {
 	userResults := []User{}
 
 	qs := applySearch("SELECT * FROM users", search)
 	fmt.Println(formatQuery(qs))
 
-	if err := um.db.Select(&userResults, qs); err != nil {
+	if err := um.DB.Select(&userResults, qs); err != nil {
 		return nil, err
 	}
 
 	return userResults, nil
 }
 
-func (gm goalModel) read(search map[string]interface{}) ([]Goal, error) {
+func (gm Goals) Read(search map[string]interface{}) ([]Goal, error) {
 	gs := []Goal{}
 
 	selectString := `
@@ -71,14 +76,14 @@ func (gm goalModel) read(search map[string]interface{}) ([]Goal, error) {
 	qs := applySearch(selectString+fromString, search)
 	fmt.Println(qs)
 
-	if err := gm.db.Select(&gs, qs); err != nil {
+	if err := gm.DB.Select(&gs, qs); err != nil {
 		return nil, err
 	}
 
 	return gs, nil
 }
 
-func (sm streakModel) read(search map[string]interface{}) ([]Streak, error) {
+func (sm Streaks) Read(search map[string]interface{}) ([]Streak, error) {
 	streakResults := []Streak{}
 
 	selectString := "SELECT streaks.*"
@@ -94,31 +99,30 @@ func (sm streakModel) read(search map[string]interface{}) ([]Streak, error) {
 	qs := applySearch(selectString+fromString, search)
 	fmt.Println(qs)
 
-	if err := sm.db.Select(&streakResults, qs); err != nil {
+	if err := sm.DB.Select(&streakResults, qs); err != nil {
 		return nil, err
 	}
 
 	return streakResults, nil
 }
 
-/*
- * Create
- */
-func (um userModel) create(u User) error {
+// Create - create given user
+func (um Users) Create(u User) error {
 	qs := `
 		INSERT INTO users (name, email)
 		VALUES (:name, :email)
 	`
 	fmt.Println(formatQuery(qs))
 
-	if _, err := um.db.NamedExec(qs, &u); !isErrDuplicateEntry(err) {
+	if _, err := um.DB.NamedExec(qs, &u); !isErrDuplicateEntry(err) {
 		return err
 	}
 
 	return nil
 }
 
-func (gm goalModel) create(g Goal) error {
+// Create - creative given goal
+func (gm Goals) Create(g Goal) error {
 	fmt.Println(g)
 	qs := `
 		INSERT INTO goals (
@@ -144,14 +148,15 @@ func (gm goalModel) create(g Goal) error {
 	`
 	fmt.Println(formatQuery(qs))
 
-	if _, err := gm.db.NamedExec(qs, &g); !isErrDuplicateEntry(err) {
+	if _, err := gm.DB.NamedExec(qs, &g); !isErrDuplicateEntry(err) {
 		return err
 	}
 
 	return nil
 }
 
-func (sm streakModel) create(s Streak) error {
+// Create - create given streak
+func (sm Streaks) Create(s Streak) error {
 	qs := `
 		INSERT INTO streaks (
 			date_start,
@@ -165,17 +170,15 @@ func (sm streakModel) create(s Streak) error {
 	`
 	fmt.Println(formatQuery(qs))
 
-	if _, err := sm.db.NamedExec(qs, &s); !isErrDuplicateEntry(err) {
+	if _, err := sm.DB.NamedExec(qs, &s); !isErrDuplicateEntry(err) {
 		return err
 	}
 
 	return nil
 }
 
-/*
- * Update
- */
-func (um userModel) update(id int, u User) error {
+// Update - update given user
+func (um Users) Update(id int, u User) error {
 	u.ID = id
 
 	qs := `
@@ -185,13 +188,14 @@ func (um userModel) update(id int, u User) error {
     `
 	fmt.Println(formatQuery(qs))
 
-	if _, err := um.db.NamedExec(qs, &u); err != nil {
+	if _, err := um.DB.NamedExec(qs, &u); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (gm goalModel) update(id int, g Goal) error {
+// Update - update given goal
+func (gm Goals) Update(id int, g Goal) error {
 	g.ID = id
 
 	qs := `
@@ -209,13 +213,14 @@ func (gm goalModel) update(id int, g Goal) error {
 	`
 	fmt.Println(formatQuery(qs))
 
-	if _, err := gm.db.NamedExec(qs, &g); err != nil {
+	if _, err := gm.DB.NamedExec(qs, &g); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (sm streakModel) update(id int, s Streak) error {
+// Update - update given streak
+func (sm Streaks) Update(id int, s Streak) error {
 	s.ID = id
 
 	qs := `
@@ -228,7 +233,7 @@ func (sm streakModel) update(id int, s Streak) error {
 	`
 	fmt.Println(formatQuery(qs))
 
-	if _, err := sm.db.NamedExec(qs, &s); err != nil {
+	if _, err := sm.DB.NamedExec(qs, &s); err != nil {
 		fmt.Println(err)
 		return err
 	}
@@ -242,14 +247,17 @@ func delete(db *sqlx.DB, id int, table string) {
 	db.MustExec("DELETE FROM "+table+" WHERE id = ?", id)
 }
 
-func (um userModel) delete(id int) {
-	delete(um.db, id, "users")
+// Delete - delete given user
+func (um Users) Delete(id int) {
+	delete(um.DB, id, "users")
 }
 
-func (gm goalModel) delete(id int) {
-	delete(gm.db, id, "goals")
+// Delete - delete given goal
+func (gm Goals) Delete(id int) {
+	delete(gm.DB, id, "goals")
 }
 
-func (sm streakModel) delete(id int) {
-	delete(sm.db, id, "streaks")
+// Delete - delete given streak
+func (sm Streaks) Delete(id int) {
+	delete(sm.DB, id, "streaks")
 }
