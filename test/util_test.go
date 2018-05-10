@@ -22,7 +22,7 @@ func TestFormatQuery(t *testing.T) {
 	}
 
 	expected = "SELECT * FROM table"
-	actual = formatQuery("SELECT * FROM table")
+	actual = models.FormatQuery("SELECT * FROM table")
 
 	if expected != actual {
 		t.Error("formatQuery: expected '" + actual + "' to equal '" + expected + "'")
@@ -35,7 +35,7 @@ func TestIsErrDuplicateEntry(t *testing.T) {
 		t.Error("isDuplicateEntry failed connecting to database", err)
 	}
 
-	u := user{1, "name", "email"}
+	u := models.User{ID: 1, Name: "name", Email: "email", ExternalID: "id", Source: "source"}
 	_, err = db.NamedExec("INSERT INTO users VALUES (:id, :name, :email)", &u)
 	if err != nil {
 		t.Error("isDuplicateEntry failed insrting initial seed data", err)
@@ -43,20 +43,20 @@ func TestIsErrDuplicateEntry(t *testing.T) {
 
 	_, err = db.NamedExec("INSERT INTO users VALUES (:id, :name, :email)", &u)
 	expected := true
-	actual := isErrDuplicateEntry(err)
+	actual := models.IsErrDuplicateEntry(err)
 	if expected != actual {
 		t.Error("isErrDuplicateEntry: expected '" + strconv.FormatBool(actual) + "' to equal '" + strconv.FormatBool(expected) + "'")
 	}
 
 	_, err = db.NamedExec("this is a nonsense query", &u)
 	expected = false
-	actual = isErrDuplicateEntry(err)
+	actual = models.IsErrDuplicateEntry(err)
 	if expected != actual {
 		t.Error("isErrDuplicateEntry: expected '" + strconv.FormatBool(actual) + "' to equal '" + strconv.FormatBool(expected) + "'")
 	}
 
 	expected = false
-	actual = isErrDuplicateEntry(nil)
+	actual = models.IsErrDuplicateEntry(nil)
 	if expected != actual {
 		t.Error("isErrDuplicateEntry: expected '" + strconv.FormatBool(actual) + "' to equal '" + strconv.FormatBool(expected) + "'")
 	}

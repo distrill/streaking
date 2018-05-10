@@ -130,7 +130,6 @@ func IsLoggedIn(next echo.HandlerFunc) echo.HandlerFunc {
 			HttpOnly: true,
 		}
 		user := sess.Values["user"]
-		fmt.Println(user)
 
 		if user != nil {
 			return next(c)

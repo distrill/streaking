@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo-contrib/session"
 )
 
 type handler struct {
@@ -18,23 +20,19 @@ type successResponse struct {
 	Success bool `json:"success"`
 }
 
-// GET /users
-func (h *handler) getUsers(c echo.Context) error {
-	um := models.Users{h.db}
-	us, err := um.Read(nil)
-	if err != nil {
-		return err
-	}
-	return c.JSON(http.StatusOK, us)
-}
-
-// GET /users/:user_id
+// GET /me
 func (h *handler) getUser(c echo.Context) error {
-	um := models.Users{h.db}
-	gm := models.Goals{h.db}
-	sm := models.Streaks{h.db}
+	um := models.Users{DB: h.db}
+	gm := models.Goals{DB: h.db}
+	sm := models.Streaks{DB: h.db}
 
-	uid := c.Param("user_id")
+	sess, _ := session.Get("session", c)
+	sess.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 7,
+		HttpOnly: true,
+	}
+	uid := sess.Values["user"]
 
 	var us []models.User
 	var gs []models.Goal
@@ -61,48 +59,23 @@ func (h *handler) getUser(c echo.Context) error {
 	}{us[0], gs, ss})
 }
 
-// GET /users/:user_id/goals
-func (h *handler) getGoals(c echo.Context) error {
-	gm := models.Goals{h.db}
-	uid := c.Param("user_id")
-	var gs []models.Goal
-	var err error
-
-	if gs, err = gm.Read(map[string]interface{}{"user_id": uid}); err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusOK, gs)
-}
-
-// GET /users/:user_id/streaks
-func (h *handler) getStreaks(c echo.Context) error {
-	sm := models.Streaks{h.db}
-	uid := c.Param("user_id")
-	var ss []models.Streak
-	var err error
-
-	if ss, err = sm.Read(map[string]interface{}{"user_id": uid}); err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusOK, ss)
-}
-
-// POST /users/:user_id/goals
+// POST /me/goals
 func (h *handler) createGoal(c echo.Context) error {
 	g := models.Goal{}
 	if err := c.Bind(&g); err != nil {
 		return err
 	}
 
-	uid, err := strconv.Atoi(c.Param("user_id"))
-	if err != nil {
-		return err
+	sess, _ := session.Get("session", c)
+	sess.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 7,
+		HttpOnly: true,
 	}
+	uid := sess.Values["user"].(int)
 	g.UserID = uid
 
-	gm := models.Goals{h.db}
+	gm := models.Goals{DB: h.db}
 	if err := gm.Create(g); err != nil {
 		return err
 	}
@@ -110,14 +83,14 @@ func (h *handler) createGoal(c echo.Context) error {
 	return c.JSON(http.StatusOK, successResponse{true})
 }
 
-// POST /users/:user_id/streaks
+// POST /me/streaks
 func (h *handler) createStreak(c echo.Context) error {
 	s := models.Streak{}
 	if err := c.Bind(&s); err != nil {
 		return err
 	}
 
-	sm := models.Streaks{h.db}
+	sm := models.Streaks{DB: h.db}
 
 	if err := sm.Create(s); err != nil {
 		return err
@@ -126,21 +99,28 @@ func (h *handler) createStreak(c echo.Context) error {
 	return c.JSON(http.StatusOK, successResponse{true})
 }
 
-// PUT /users/:user_id/goals/:goal_id
+// PUT /me/goals/:goal_id
 func (h *handler) updateGoal(c echo.Context) error {
 	g := models.Goal{}
 	if err := c.Bind(&g); err != nil {
 		return err
 	}
 
+	sess, _ := session.Get("session", c)
+	sess.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 7,
+		HttpOnly: true,
+	}
+	uid := sess.Values["user"].(int)
 	gid, err := strconv.Atoi(c.Param("goal_id"))
-	uid, err := strconv.Atoi(c.Param("user_id"))
+
 	if err != nil {
 		return err
 	}
 	g.UserID = uid
 
-	gm := models.Goals{h.db}
+	gm := models.Goals{DB: h.db}
 	if err := gm.Update(gid, g); err != nil {
 		return err
 	}
@@ -148,7 +128,7 @@ func (h *handler) updateGoal(c echo.Context) error {
 	return c.JSON(http.StatusOK, successResponse{true})
 }
 
-// PUT /users/:user_id/streaks/:streak_id
+// PUT /me/streaks/:streak_id
 func (h *handler) updateStreak(c echo.Context) error {
 	s := models.Streak{}
 	if err := c.Bind(&s); err != nil {
@@ -160,7 +140,7 @@ func (h *handler) updateStreak(c echo.Context) error {
 		return err
 	}
 
-	sm := models.Streaks{h.db}
+	sm := models.Streaks{DB: h.db}
 	if err := sm.Update(sid, s); err != nil {
 		fmt.Println(err)
 		return err
@@ -171,38 +151,41 @@ func (h *handler) updateStreak(c echo.Context) error {
 
 // DELTE /users/:user_id
 func (h *handler) deleteUser(c echo.Context) error {
-	uid, err := strconv.Atoi(c.Param("user_id"))
-	if err != nil {
-		return err
+	sess, _ := session.Get("session", c)
+	sess.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 7,
+		HttpOnly: true,
 	}
+	uid := sess.Values["user"].(int)
 
-	um := models.Users{h.db}
+	um := models.Users{DB: h.db}
 	um.Delete(uid)
 
 	return c.JSON(http.StatusOK, successResponse{true})
 }
 
-// DELETE /users/:user_id/goals/:goal_id
+// DELETE /me/goals/:goal_id
 func (h *handler) deleteGoal(c echo.Context) error {
 	gid, err := strconv.Atoi(c.Param("goal_id"))
 	if err != nil {
 		return err
 	}
 
-	gm := models.Goals{h.db}
+	gm := models.Goals{DB: h.db}
 	gm.Delete(gid)
 
 	return c.JSON(http.StatusOK, successResponse{true})
 }
 
-// DELETE /users/:user_id/streaks/:streak_id
+// DELETE /me/streaks/:streak_id
 func (h *handler) deleteStreak(c echo.Context) error {
 	sid, err := strconv.Atoi(c.Param("streak_id"))
 	if err != nil {
 		return err
 	}
 
-	sm := models.Streaks{h.db}
+	sm := models.Streaks{DB: h.db}
 	sm.Delete(sid)
 
 	return c.JSON(http.StatusOK, successResponse{true})

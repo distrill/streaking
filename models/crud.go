@@ -114,7 +114,7 @@ func (um Users) Create(u User) error {
 	`
 	fmt.Println(FormatQuery(qs))
 
-	if _, err := um.DB.NamedExec(qs, &u); !isErrDuplicateEntry(err) {
+	if _, err := um.DB.NamedExec(qs, &u); !IsErrDuplicateEntry(err) {
 		return err
 	}
 
@@ -148,7 +148,7 @@ func (gm Goals) Create(g Goal) error {
 	`
 	fmt.Println(FormatQuery(qs))
 
-	if _, err := gm.DB.NamedExec(qs, &g); !isErrDuplicateEntry(err) {
+	if _, err := gm.DB.NamedExec(qs, &g); !IsErrDuplicateEntry(err) {
 		return err
 	}
 
@@ -170,7 +170,7 @@ func (sm Streaks) Create(s Streak) error {
 	`
 	fmt.Println(FormatQuery(qs))
 
-	if _, err := sm.DB.NamedExec(qs, &s); !isErrDuplicateEntry(err) {
+	if _, err := sm.DB.NamedExec(qs, &s); !IsErrDuplicateEntry(err) {
 		return err
 	}
 

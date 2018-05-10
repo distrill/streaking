@@ -75,18 +75,16 @@ func main() {
 	e.GET("/logout", auth.Logout)
 
 	// api routes
-	a.GET("/users/:user_id", api.getUser)
-	a.GET("/users/:user_id/goals", api.getGoals)
-	a.GET("/users/:user_id/streaks", api.getStreaks)
+	a.GET("/me", api.getUser)
 
-	a.POST("/users/:user_id/goals", api.createGoal)
-	a.POST("/users/:user_id/streaks", api.createStreak)
+	a.POST("/goals", api.createGoal)
+	a.POST("/streaks", api.createStreak)
 
-	a.PUT("/users/:user_id/goals/:goal_id", api.updateGoal)
-	a.PUT("/users/:user_id/streaks/:streak_id", api.updateStreak)
+	a.PUT("/goals/:goal_id", api.updateGoal)
+	a.PUT("/streaks/:streak_id", api.updateStreak)
 
-	a.DELETE("/users/:user_id/goals/:goal_id", api.deleteGoal)
-	a.DELETE("/users/:user_id/streaks/:streak_id", api.deleteStreak)
+	a.DELETE("/goals/:goal_id", api.deleteGoal)
+	a.DELETE("/streaks/:streak_id", api.deleteStreak)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

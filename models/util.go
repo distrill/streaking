@@ -13,7 +13,8 @@ func FormatQuery(qs string) string {
 	return strings.Trim(noTabsOrSpaces, " ")
 }
 
-func isErrDuplicateEntry(err error) bool {
+// IsErrDuplicateEntry - check if error is sql error for inserting duplicate entry
+func IsErrDuplicateEntry(err error) bool {
 	me, ok := err.(*mysql.MySQLError)
 	return err != nil && ok && me.Number == 1062
 }
