@@ -11,7 +11,7 @@ TODO:
         [X] github
         [X] google
         [X] upsert user
-        [ ] session
+        [X] session
         [ ] protected routes (middlewares)
         [ ] streaking
     [.] more rest-y put endpoints? (kind of done, consider /me)

@@ -8,8 +8,10 @@ import (
 	"bh/streaking/auth/github"
 	"bh/streaking/auth/google"
 
+	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo-contrib/session"
 )
 
 const htmlIndex = `
@@ -25,6 +27,13 @@ const htmlIndex = `
 `
 
 func handleMain(c echo.Context) error {
+	sess, _ := session.Get("session", c)
+	sess.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 7,
+		HttpOnly: true,
+	}
+	user := sess.Values["user"]
 	return c.HTML(http.StatusOK, htmlIndex)
 }
 
@@ -35,6 +44,7 @@ func main() {
 	}
 
 	e := echo.New()
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte("big giant dick session secret"))))
 
 	e.GET("/", handleMain)
 
