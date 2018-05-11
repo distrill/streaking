@@ -17,6 +17,10 @@ import (
 	"golang.org/x/oauth2"
 )
 
+type errorResponse struct {
+	Message bool `json:"success"`
+}
+
 // Settings - settings for various login schemes
 type Settings struct {
 	OauthConf        *oauth2.Config
@@ -116,7 +120,7 @@ func BuildCallbackHandler(settings Settings) echo.HandlerFunc {
 		sess.Save(c.Request(), c.Response())
 
 		// should redirect to app url
-		return c.Redirect(http.StatusFound, "/api/users/2")
+		return c.Redirect(http.StatusFound, "/")
 	}
 }
 
@@ -131,11 +135,13 @@ func IsLoggedIn(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 		user := sess.Values["user"]
 
-		if user != nil {
-			return next(c)
+		fmt.Println("one")
+		if user == nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Please log in")
 		}
+		fmt.Println("two")
 
-		return c.Redirect(http.StatusFound, "/")
+		return next(c)
 	}
 }
 
@@ -149,6 +155,8 @@ func Logout(c echo.Context) error {
 	}
 	sess.Values["user"] = nil
 	sess.Save(c.Request(), c.Response())
+
+	fmt.Println("whatever")
 
 	return c.Redirect(http.StatusFound, "/")
 }

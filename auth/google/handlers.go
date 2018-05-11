@@ -17,7 +17,7 @@ var settings = auth.Settings{
 	OauthConf: &oauth2.Config{
 		ClientID:     "443546063879-ocoa94kseo25apobl1dol3kqi2vkaqq1.apps.googleusercontent.com",
 		ClientSecret: "WtR0ABtcDhWwfVcV3FR14SUI",
-		RedirectURL:  "http://localhost:8080/callback/google",
+		RedirectURL:  "http://streakingapp/callback/google", // TODO env pls
 		Scopes:       []string{"profile", "email"},
 		Endpoint:     google.Endpoint,
 	},

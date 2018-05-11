@@ -17,7 +17,7 @@ var settings = auth.Settings{
 	OauthConf: &oauth2.Config{
 		ClientID:     "226042608152816",
 		ClientSecret: "617e257795853d28e562ebecd14e400f",
-		RedirectURL:  "https://d36b29a6.ngrok.io/callback/facebook",
+		RedirectURL:  "http://streakingapp.com/callback/facebook",
 		Scopes:       []string{"public_profile", "email"},
 		Endpoint:     facebook.Endpoint,
 	},
