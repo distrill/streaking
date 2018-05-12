@@ -152,9 +152,8 @@ func CheckLogIn(next echo.HandlerFunc) echo.HandlerFunc {
 		user := sess.Values["user"]
 
 		if user == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Please log in")
+			return c.Redirect(http.StatusFound, "/login")
 		}
-		fmt.Println("two")
 
 		return next(c)
 	}
