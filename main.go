@@ -60,8 +60,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte("big giant dick session secret"))))
-	// api middleware
-	a.Use(auth.IsLoggedIn)
+	e.Use(auth.CheckLogIn)
 
 	// static as
 	e.Static("/", "public")

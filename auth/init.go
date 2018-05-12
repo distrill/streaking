@@ -21,6 +21,17 @@ type errorResponse struct {
 	Message bool `json:"success"`
 }
 
+var skipRoutes = map[string]bool{
+	"/login":             true,
+	"/logout":            true,
+	"/login/facebook":    true,
+	"/login/github":      true,
+	"/login/google":      true,
+	"/callback/facebook": true,
+	"/callback/github":   true,
+	"/callback/google":   true,
+}
+
 // Settings - settings for various login schemes
 type Settings struct {
 	OauthConf        *oauth2.Config
@@ -124,9 +135,14 @@ func BuildCallbackHandler(settings Settings) echo.HandlerFunc {
 	}
 }
 
-// IsLoggedIn - middleware to ensure user is logged in
-func IsLoggedIn(next echo.HandlerFunc) echo.HandlerFunc {
+// CheckLogIn - middleware to ensure user is logged in
+func CheckLogIn(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		// skip check for some routes
+		if skipRoutes[c.Request().URL.Path] == true {
+			return next(c)
+		}
+
 		sess, _ := session.Get("session", c)
 		sess.Options = &sessions.Options{
 			Path:     "/",
@@ -135,7 +151,6 @@ func IsLoggedIn(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 		user := sess.Values["user"]
 
-		fmt.Println("one")
 		if user == nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Please log in")
 		}
@@ -155,8 +170,6 @@ func Logout(c echo.Context) error {
 	}
 	sess.Values["user"] = nil
 	sess.Save(c.Request(), c.Response())
-
-	fmt.Println("whatever")
 
 	return c.Redirect(http.StatusFound, "/")
 }
