@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"bh/streaking/auth"
 	"bh/streaking/auth/facebook"
@@ -39,6 +40,17 @@ func handleMain(c echo.Context) error {
 	return c.HTML(http.StatusOK, string(htmlIndex))
 }
 
+func noCache(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		c.Response().Header().Set("Cache-Control", "no-cache, private, max-age=0")
+		c.Response().Header().Set("Expires", time.Unix(0, 0).Format(http.TimeFormat))
+		c.Response().Header().Set("Pragma", "no-cache")
+		c.Response().Header().Set("X-Accel-Expires", "0")
+
+		return next(c)
+	}
+}
+
 func main() {
 	if os.Getenv("PORT") == "" {
 		log.Fatal("$PORT must be set")
@@ -60,6 +72,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte("big giant dick session secret"))))
+	e.Use(noCache)
 	e.Use(auth.CheckLogIn)
 
 	// static as
