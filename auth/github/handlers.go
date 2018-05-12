@@ -5,6 +5,7 @@ import (
 	"bh/streaking/models"
 	"encoding/json"
 	"log"
+	"os"
 	"strconv"
 
 	"github.com/jmoiron/sqlx"
@@ -18,7 +19,7 @@ var settings = auth.Settings{
 	OauthConf: &oauth2.Config{
 		ClientID:     "27664cbca31fbcd886db",
 		ClientSecret: "9535df4affb9bd25ec44f6d00a32480a4fd9a078",
-		RedirectURL:  "http://streakingapp.com/callback/github",
+		RedirectURL:  os.Getenv("BASE_URL") + "/callback/github",
 		Scopes:       []string{"public_profile"},
 		Endpoint:     github.Endpoint,
 	},

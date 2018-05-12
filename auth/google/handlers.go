@@ -5,6 +5,7 @@ import (
 	"bh/streaking/models"
 	"encoding/json"
 	"log"
+	"os"
 
 	"github.com/jmoiron/sqlx"
 
@@ -17,7 +18,7 @@ var settings = auth.Settings{
 	OauthConf: &oauth2.Config{
 		ClientID:     "443546063879-ocoa94kseo25apobl1dol3kqi2vkaqq1.apps.googleusercontent.com",
 		ClientSecret: "WtR0ABtcDhWwfVcV3FR14SUI",
-		RedirectURL:  "http://streakingapp/callback/google", // TODO env pls
+		RedirectURL:  os.Getenv("BASE_URL") + "/callback/google",
 		Scopes:       []string{"profile", "email"},
 		Endpoint:     google.Endpoint,
 	},

@@ -40,6 +40,13 @@ func handleMain(c echo.Context) error {
 }
 
 func main() {
+	if os.Getenv("PORT") == "" {
+		log.Fatal("$PORT must be set")
+	}
+	if os.Getenv("BASE_URL") == "" {
+		log.Fatal("$BASE_URL must be set")
+	}
+
 	db, err := sqlx.Connect("mysql", "streaking:streaking@/streaking")
 	if err != nil {
 		log.Panic(err)
@@ -86,8 +93,5 @@ func main() {
 
 	port := os.Getenv("PORT")
 
-	if port == "" {
-		log.Fatal("$PORT must be set")
-	}
 	e.Logger.Fatal(e.Start(":" + port))
 }

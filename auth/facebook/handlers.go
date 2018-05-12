@@ -5,6 +5,7 @@ import (
 	"bh/streaking/models"
 	"encoding/json"
 	"log"
+	"os"
 
 	"github.com/jmoiron/sqlx"
 
@@ -17,7 +18,7 @@ var settings = auth.Settings{
 	OauthConf: &oauth2.Config{
 		ClientID:     "226042608152816",
 		ClientSecret: "617e257795853d28e562ebecd14e400f",
-		RedirectURL:  "http://streakingapp.com/callback/facebook",
+		RedirectURL:  os.Getenv("BASE_URL") + "/callback/facebook",
 		Scopes:       []string{"public_profile", "email"},
 		Endpoint:     facebook.Endpoint,
 	},
