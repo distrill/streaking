@@ -152,7 +152,10 @@ func CheckLogIn(next echo.HandlerFunc) echo.HandlerFunc {
 		user := sess.Values["user"]
 
 		if user == nil {
-			return c.Redirect(http.StatusFound, "/login")
+			if c.Request().URL.Path == "/" {
+				return c.Redirect(http.StatusFound, "/login")
+			}
+			return echo.NewHTTPError(http.StatusUnauthorized, "please log in pls")
 		}
 
 		return next(c)
@@ -170,5 +173,5 @@ func Logout(c echo.Context) error {
 	sess.Values["user"] = nil
 	sess.Save(c.Request(), c.Response())
 
-	return c.Redirect(http.StatusFound, "/")
+	return c.Redirect(http.StatusFound, "/login")
 }
