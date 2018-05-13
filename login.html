@@ -9,26 +9,39 @@
     body {
       text-align: center;
     }
+
+    button {
+      border: 1px solid black;
+      border-radius: 3px;
+      display: inline-block;
+      margin: 5px;
+      padding: 10px 20px;
+    }
+
+    button:hover {
+      cursor: pointer;
+    }
+
+    .logo {
+      width: 20%;
+      margin: auto;
+    }
   </style>
 </head>
 
 <body>
   <p>
-    Streaking
+    <img class="logo" src="/logo.png" />
   </p>
   <p>
-    log in pls
-  </p>
-  <!--
-  <p>
-    <a href="/login/facebook">facebook</a>
-  </p>
-  -->
-  <p>
-    <a href="/login/github">github</a>
+    <a href="/login/github">
+      <button>Login with Github</button>
+    </a>
   </p>
   <p>
-    <a href="/login/google">google</a>
+    <a href="/login/google">
+      <button>Login with Google</button>
+    </a>
   </p>
 </body>
 

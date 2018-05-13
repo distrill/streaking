@@ -30,6 +30,7 @@ var skipRoutes = map[string]bool{
 	"/callback/facebook": true,
 	"/callback/github":   true,
 	"/callback/google":   true,
+	"/logo.png":          true,
 }
 
 // Settings - settings for various login schemes
