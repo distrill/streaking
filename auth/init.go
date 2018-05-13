@@ -31,7 +31,8 @@ var skipRoutes = map[string]bool{
 	"/callback/github":   true,
 	"/callback/google":   true,
 	"/logo.png":          true,
-	"/favicon.ico":       true,
+	"/logo_side.png":     true,
+  "/favicon.ico":       true,
 }
 
 // Settings - settings for various login schemes
