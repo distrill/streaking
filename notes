@@ -1,30 +1,21 @@
-users
-------
-id
-name
-email
+TODO:
+    [X] add interval to streak
+    [X] accumulator_increment should be accumulator_increment
+        [X] accumulator_increment is now derived: (sum increment * ((end - start) * interval))
 
-
-goals
-------
-id
-name
-description
-
-
-days
-------
-id
-date
-user_id
-goal_id
-
-
-streaks
---------
-id
-user_id
-goal_id
-accumulator (think money saved not buying cigarettes)
-start_date
-end_date
+    [X] interval should be on goal
+    [X] accumulator info should be on goal, not streak
+    [X] fix weird model names (model package, User struct type, userModel interface :gun:)
+    [X] login
+        [X] facebook
+        [X] github
+        [X] google
+        [X] upsert user
+        [X] session
+        [X] protected routes (middlewares)
+        [X] logout
+    [X] more rest-y put endpoints? (kind of done, consider /me)
+    [ ] put/post/delete streaks/goals should verify they belong to user
+    [ ] log with levels
+    [ ] streaking (email) login
+    [ ] completed goal(?)
